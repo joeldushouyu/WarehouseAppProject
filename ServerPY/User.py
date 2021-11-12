@@ -1,18 +1,24 @@
 
-from Enumerables import AccountType
+from Enumerables.AccountType import AccountType
 
+from Database import db
 
-class User():
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    accountName = db.Column(db.String(100), nullable=False)
+    accountType = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    workingSection = "AA-AA"  # default
+    sessionId = ""
+    currentActiveSession = None
+    PickedUpOrders = []
+    """
+    def __init__(self, workingSection, sessionId, currentActiveSession):
 
-    def __init__(self, id, accountName:str, workingSection, sessionId, currentActiveSession, accountType:AccountType):
-        self.id = id
-        self.accountName =accountName
         self.workingSection = workingSection
-        self.sessionId = sessionId # the current session that user logined
+        self.sessionId = sessionId # the current uuid that user logined
         self.currentActiveSession = currentActiveSession # the current activeSession that holds the Command going to be executed
-        self.accountType = accountType
+
         self.PickedUpOrders = []   # List indicate orders being picked up by this current user
 
-
-
-
+    """

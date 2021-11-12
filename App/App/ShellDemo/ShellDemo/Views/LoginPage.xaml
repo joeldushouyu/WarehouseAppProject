@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModel="clr-namespace:ShellDemo.ViewModels" 
+             mc:Ignorable="d"
+             x:Class="ShellDemo.Views.LoginPage"
+             x:DataType="viewModel:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Content>
+        <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+            <Label Text="{Binding ErrorMessage}" IsVisible="{Binding errorOccurred}" TextColor="Red" />
+            <Label Text="Please enter your cridentials below" />
+            <Label Text="Username" />
+            <Entry Text="{Binding Username}"/>
+            
+            <Label Text="Password"/>
+            <Entry Text="{Binding Password}"/>
+            
+            <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

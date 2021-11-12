@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "q5e7fJfUOJfOoXibHfh/SpzTnoPBIdWaW0Y/evNHcKfwB72LwqVblYul5p5ed0472XIC7gvngbgx4wfdsTOYaw==",
+  "success": true,
+  "projectFilePath": "G:\\college life\\2.1\\cps320\\WarehouseProject\\WarehouseAppProject\\App\\ConsoleApp1\\ConsoleApp1.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\joeld\\.nuget\\packages\\flurl\\3.0.2\\flurl.3.0.2.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\flurl.http\\3.2.0\\flurl.http.3.2.0.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\microsoft.netcore.platforms\\2.1.2\\microsoft.netcore.platforms.2.1.2.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0-rc.2.21480.5\\microsoft.win32.systemevents.6.0.0-rc.2.21480.5.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\system.drawing.common\\6.0.0-rc.2.21480.5\\system.drawing.common.6.0.0-rc.2.21480.5.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",
+    "C:\\Users\\joeld\\.nuget\\packages\\system.text.encoding.codepages\\4.5.1\\system.text.encoding.codepages.4.5.1.nupkg.sha512"
+  ],
+  "logs": []
+}
