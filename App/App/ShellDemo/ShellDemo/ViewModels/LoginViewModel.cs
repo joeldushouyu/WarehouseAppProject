@@ -58,7 +58,7 @@ namespace ShellDemo.ViewModels
             try
             {
                 string url_isLogin = MobileApp.GetSingletion().BaseUrl + "/islogin";
-                var res = await url_isLogin.PostJsonAsync(new User { AccountName = "Jodel", Password = "200367" });
+                var res = await url_isLogin.PostJsonAsync(new User { AccountName = "Joel", Password = "200367" });
 
 
 
