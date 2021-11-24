@@ -24,4 +24,3 @@ class Location(LocationComponent):
         self.locationComponentList.remove(loc)
 
 
-d

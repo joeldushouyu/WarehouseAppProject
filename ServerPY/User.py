@@ -8,10 +8,14 @@ class User(db.Model):
     accountName = db.Column(db.String(100), nullable=False)
     accountType = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    workingSection = "AA-AA"  # default
+    #workingSection = "AA-AA"  # default
+    pickedUpOrders = []
     sessionId = ""
-    currentActiveSession = None
-    PickedUpOrders = []
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+
+        #self.currentActiveSession = None
+
     """
     def __init__(self, workingSection, sessionId, currentActiveSession):
 

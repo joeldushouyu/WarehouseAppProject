@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShellDemo.Views.PickRestockPage"
+             xmlns:zxing="clr-namespace:ZXing.Net.Mobile.Forms;assembly=ZXing.Net.Mobile.Forms"
+             Shell.PresentationMode="ModalAnimated"
+             Title="New Item"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"
+             x:DataType="local:PickRestockViewModel"
+             ios:Page.UseSafeArea="true">
+    <ContentPage.Content>
+        <StackLayout Spacing="3" Padding="15">
+            <Label Text="Text" FontSize="Medium" />
+            <Entry Text="{Binding Text, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Description" FontSize="Medium" />
+            <Editor Text="{Binding Description, Mode=TwoWay}" AutoSize="TextChanges" FontSize="Medium" Margin="0" />
+
+
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Action:" />
+                <Label Text="order barcode"/>
+
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding Action}" />
+                <Label Text="{Binding OrderBarcodeID}"/>
+                
+            </StackLayout>
+
+
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Quantity" />
+                <Label Text="Item barcode"/>
+
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding Quantity}" />
+                <Label Text="{Binding ItemBarcode}"/>
+
+            </StackLayout>
+            
+
+            <Picker x:Name="ActionPicker" Title="Select a monkey"
+                TitleColor="Red" SelectedIndexChanged="{Binding OnPickerSelectedIndexChanged}">
+                <Picker.Items>
+                    <x:String>Pick</x:String>
+                    <x:String>Supply</x:String>
+
+                </Picker.Items>
+            </Picker>
+
+
+            <Entry Text="{Binding BarCodeID}" />
+            <Button Text="Scan" Command="{Binding ScanCommand}"/>
+            <zxing:ZXingScannerView x:Name="ZxingScan"  IsScanning="True"  OnScanResult="ZXingScannerView_OnScanResult"  
+                                    IsVisible="{Binding IsScanning}" />
+
+            <Entry Text="{Binding QuantityByUser}"/>
+
+
+            <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+
+        </StackLayout>
+    </ContentPage.Content>
+    
+</ContentPage>

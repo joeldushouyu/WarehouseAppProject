@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShellDemo.Views.OrderGettedDetailPage"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"
+             
+             x:DataType="local:OrderGettedDetailViewModel"
+             Title="Order detail">
+
+
+    <StackLayout Spacing="20" Padding="15">
+        <Label Text="BoxSize:" FontSize="Medium" />
+        <Label Text="{Binding BoxSize }" FontSize="Small"/>
+        <Label Text="Message:" FontSize="Medium" />
+        <Label Text="{Binding  Message}" FontSize="Small"/>
+        <Label Text="Date order:" FontSize="Medium" />
+        <Label Text="{Binding  OrderDate}" FontSize="Small"/>
+    </StackLayout>
+    
+</ContentPage>

@@ -8,24 +8,43 @@ import time
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite3'
 db = SQLAlchemy(app)
 
-# Define model class
-class LocationInformation(db.Model):
+from datetime import datetime
+
+
+class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(80), nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    title = db.Column(db.String(80), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    pub_date = db.Column(db.DateTime, nullable=False,
+        default=datetime.utcnow)
 
-    def to_dict(self):
-        # See https://stackoverflow.com/questions/7102754/jsonify-a-sqlalchemy-result-set-in-flask for a general solution
-        return { 'id': self.id, 'description': self.description, 'price': self.price}
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
+        nullable=False)
+    category = db.relationship('Category',
+        backref=db.backref('posts', lazy=True))
 
+    def __repr__(self):
+        return '<Post %r>' % self.title
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return '<Category %r>' % self.name
 
 db.create_all() # Create tables from model classes
 
 
-
-p = LocationInformation(description="", price=1)
-db.session.add(p)
+py = Category(name='Python')
+Post(title='Hello Python!', body='Python is pretty cool', category=py)
+p = Post(title='Snakes', body='Ssssssss')
+py.posts.append(p)
+db.session.add(py)
 db.session.commit()
+print(py.posts)
+print(Post.query.with_parent(py).filter(Post.title != 'Snakes').all())

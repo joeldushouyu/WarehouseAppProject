@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:zxing="clr-namespace:ZXing.Net.Mobile.Forms;assembly=ZXing.Net.Mobile.Forms"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels" 
+             x:DataType="local:PickOrderViewModel"
+             x:Class="ShellDemo.Views.PickOrderPage">
+    <ContentPage.Content>
+        <StackLayout x:Name="StackHorizontal">
+            <Label Text="Order ID"/>
+            <Label Text="{Binding OrderID }"/>
+            <Label Text="Order Binding Barcode"/>
+            <Entry Text="{Binding BarCodeID}" IsReadOnly="{Binding HaveBarcodeID}"/>
+
+            <Button Text="Scan" Command="{Binding ScanCommand}"/>
+
+            <zxing:ZXingScannerView x:Name="ZxingScan"  IsScanning="True"  OnScanResult="ZXingScannerView_OnScanResult"  
+                                    IsVisible="{Binding IsScanning}" />
+
+            <Label Text="Error message"/>
+            <Label Text="{Binding ErrorBarCodeMessage}" TextColor="Red"/>
+            <Button Text="PickOrder" Command="{Binding PickOrderCommand}" IsEnabled="{Binding CanGetOrder }"/>
+            <Label Text="{Binding ErrorGetOrderMessage}"/>
+
+
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

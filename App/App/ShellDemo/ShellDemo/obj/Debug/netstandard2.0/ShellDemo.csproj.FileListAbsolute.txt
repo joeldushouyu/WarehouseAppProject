@@ -35,6 +35,9 @@ G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDem
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\ShellDemo.dll
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\ref\ShellDemo.dll
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\ShellDemo.pdb
-G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\ItemDetailPage.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\MainPage.xaml.g.cs
-G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\ItemsPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\OrderListPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\OrderDetailPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\PickOrderPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\OrderGettedDetailPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\OrderGettedListPage.xaml.g.cs

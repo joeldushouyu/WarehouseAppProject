@@ -14,8 +14,13 @@ namespace ShellDemo.Views
             InitializeComponent();
 
             // if user is not login, turn the button to login, else
-            MobileApp app = MobileApp.GetSingletion();
-            if(app.User.CurrentSession == null)
+          
+          
+        }
+
+        protected override async void OnAppearing()
+        {   MobileApp app = MobileApp.GetSingletion();
+            if(app.User.CurrentSessionUUID == null)
             {
                 // means not logined
                 nextActionBtn.Text = "Login";
@@ -24,7 +29,10 @@ namespace ShellDemo.Views
             {
                 nextActionBtn.Text = "Browse OrderList page";
             }
+            base.OnAppearing();
         }
+
+
 
         private void BrowseItems_Clicked(object sender, EventArgs e)
         {   
@@ -35,7 +43,7 @@ namespace ShellDemo.Views
             }
             else
             {
-                //Shell.Current.GoToAsync($"//{nameof(OrderListPage)}");
+                Shell.Current.GoToAsync($"//{nameof(OrderListPage)}");
             }
             
         }

@@ -20,7 +20,12 @@ namespace ShellDemo.ViewModels
         public string ErrorMessage
         {
             get => _errorMessage;
-            set => _errorMessage = value;
+
+            set
+            {
+                SetProperty(ref _errorMessage, value);
+                OnPropertyChanged(nameof(errorOccurred));
+            }
         }
         public bool errorOccurred => _errorMessage.Length != 0;
         
@@ -50,40 +55,107 @@ namespace ShellDemo.ViewModels
             set => _password = value;
         }
 
+        private bool _canLogin;
+        public bool CanLogin
+        {
+            get => _canLogin;
+            set{
+                _canLogin = value;
+            }
+        }
 
+        private bool ConfirmLogin(UserSession ans)
+        {
+            try
+            {
+                string url = MobileApp.GetSingletion().BaseUrl + "/confirm";
+                var respondCode =url.WithTimeout(20).PostJsonAsync(ans).Result;
+                // means user successfully logined user
+                return true;
+            }
+            catch (FlurlHttpTimeoutException er)
+            {
+                throw er;
+             
+            }catch (FlurlHttpException e)
+            {
+                int statusCode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
+                if(statusCode == 404)
+                {
+                    // could be the user has already login, or for somereason it is lost on the server
+
+                    //check if server already login
+                    try
+                    {
+                        string url_isLogin = MobileApp.GetSingletion().BaseUrl + "/islogin";
+                        var res =  url_isLogin.PostJsonAsync(new User { AccountName = _username, Password = _password });
+
+                        // success
+                        return true;
+              
+                        
+                    }
+                    catch(FlurlHttpException es)
+                    {
+                        //here means just not login
+                        throw es;
+                    }
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            
+
+        }
 
         private async void OnLoginClicked(object obj)
         {
             // ask the server to send request to server.
+            CanLogin = false;
             try
             {
                 string url_isLogin = MobileApp.GetSingletion().BaseUrl + "/islogin";
-                var res = await url_isLogin.PostJsonAsync(new User { AccountName = "Joel", Password = "200367" });
 
 
-
-                while (res == null) ;
-      
-                
-                if (res.StatusCode == 200)
+                try
                 {
+                    var res = await url_isLogin.PostJsonAsync(new User { AccountName = _username, Password = _password });
                     ErrorMessage = "You account is logined in on another device already!";
                 }
-                else //error code 404
+                catch(FlurlHttpException es)
                 {
+                    int statusCode = (int)((Flurl.Http.FlurlHttpException)es).StatusCode;
+                  
+                    if (statusCode == 400)
+                    {
+                        //means not login yet
+                        string url = MobileApp.GetSingletion().BaseUrl + "/login";
+                        UserSession ans = await url.WithTimeout(20).PostJsonAsync(new User
+                        { AccountName = this.Username, Password = this.Password }).ReceiveJson<UserSession>();
 
-                    string url = MobileApp.GetSingletion().BaseUrl + "/login";
-                    UserSession ans = await url.WithTimeout(20).PostJsonAsync(new User
-                    { AccountName = this.Username, Password = this.Password }).ReceiveJson<UserSession>();
+                        // send another request to the server, to confirm it receive the session 
 
-                    MobileApp.GetSingletion().User.CurrentSession = ans;
-                    MobileApp.GetSingletion().User.AccountName = this.Username;
 
-                    ErrorMessage = "";
-                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        // if 
+                        if ( ConfirmLogin(ans) == true)
+                        {
+                            MobileApp.GetSingletion().User.CurrentSessionUUID = ans.Session;
+                            MobileApp.GetSingletion().User.AccountName = this.Username;
+
+                            ErrorMessage = "";
+                            CanLogin = true;
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
+                        else
+                        {
+                            ErrorMessage = "An network error occurs, please retry";
+                        }
+                       
+                    }
                 }
-                
-          
+
                 
             }
             catch( FlurlHttpTimeoutException e )
@@ -102,6 +174,7 @@ namespace ShellDemo.ViewModels
                 {
                     // it has been timeout, 
                     ErrorMessage = "You account is logined in on another device already!";
+                    //TODO: what if connection lost on the way back?
                 }
                 else
                 {
@@ -110,6 +183,11 @@ namespace ShellDemo.ViewModels
                 }
 
             }
+            catch(Exception e)
+            {
+                Console.WriteLine("hello world");
+            }
+            CanLogin = true;
 
             //catch(Java.Net.UnknownHostException)
             // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one

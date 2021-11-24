@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShellDemo.Views.OrderDetailPage"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"
+             
+             x:DataType="local:OrderDetailViewModel"
+             Title="Order detail">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Pick" Command="{Binding PickOrderCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <StackLayout Spacing="20" Padding="15">
+        <Label Text="BoxSize:" FontSize="Medium" />
+        <Label Text="{Binding BoxSize }" FontSize="Small"/>
+        <Label Text="Message:" FontSize="Medium" />
+        <Label Text="{Binding  Message}" FontSize="Small"/>
+        <Label Text="Date order:" FontSize="Medium" />
+        <Label Text="{Binding  OrderDate}" FontSize="Small"/>
+    </StackLayout>
+    
+</ContentPage>

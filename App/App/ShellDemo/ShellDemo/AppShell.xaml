@@ -32,23 +32,21 @@
     
 
     <FlyoutItem Title="on flyout 1" Icon="tab_feed.png">
-        <Tab Title="Browse" Icon="tab_feed.png">
+        <Tab Title="MainPage" Icon="tab_feed.png">
             <ShellContent Title="Abot" Icon="icon_about.png" Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
-        <Tab Title="Abs" Icon="tab_about.png">
-            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:ItemsPage}" />
+        <Tab Title="Orders" Icon="tab_about.png">
+            <ShellContent Title="Browse" Icon="icon_feed.png"   ContentTemplate="{DataTemplate local:OrderListPage}" />
         </Tab>
-        <Tab Title="Testing" Icon="tab_about.png">
-            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:ItemsPage}" />
+        <Tab Title="Picking" Icon="tab_about.png">
+            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:OrderGettedListPage}" />
         </Tab>
     </FlyoutItem>
 
     <FlyoutItem Title="on flyout 2" Icon="tab_about.png">
-        <Tab Title="Browse" Icon="tab_feed.png">
-            <ShellContent Title="Abot" Icon="icon_about.png" Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
-        </Tab>
+
         <Tab Title="Aut" Icon="tab_about.png">
-            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:ItemsPage}" />
+            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:OrderListPage}" />
         </Tab>
 
     </FlyoutItem>

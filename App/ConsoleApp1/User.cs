@@ -25,7 +25,7 @@ namespace ShellDemo.Models
 
         
         private string _accountName = "";
-        [JsonProperty("accountName")]
+
         public string AccountName
         {
             get
@@ -55,7 +55,7 @@ namespace ShellDemo.Models
 
 
         private string _pass;
-        [JsonProperty("password")]
+
         public string Password
         {
             set
@@ -73,5 +73,29 @@ namespace ShellDemo.Models
 
       
         
+    }
+
+
+    public class UserConverter : JsonConverter
+    {
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            User user = (User)value;
+
+            writer.WriteValue(user.AccountName);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            User user = new User();
+            user.AccountName = (string)reader.Value;
+
+            return user;
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(User);
+        }
     }
 }

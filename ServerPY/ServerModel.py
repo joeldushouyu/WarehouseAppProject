@@ -3,27 +3,29 @@
 
 
 # the main class of the server
+import datetime
+from datetime import date
+
 import flask
-
-loginedUsers = []
-notificationList = []
-activeSessionList = [] # list hold all of Session()
-
-
-
-from flask import Flask, request, abort, jsonify, Response
+from flask import request, abort, jsonify
 from werkzeug.exceptions import HTTPException
-import json
+
+from OrderCommandParts.LoginOrderCommand import LoginOrderCommand
+from OrderCommandParts.GetOrderCommand import GetOrderCommand
 from User import User
-import time
-from flask_sqlalchemy import SQLAlchemy
-from Database import db,app
+from Database import app, loginedUsers, activeSessionList,db
 from threading import Lock
+from OrderAction import OrderAction
+from Order import  Order
 import uuid
+from Session import  Session
 
 
 lock = Lock()
 
+
+
+orderActionOrderId = OrderAction.query.all() #TODO have thread update this
 #app = Flask(__name__)
 """
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.sqlite3'
@@ -32,6 +34,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.sqlite3'
 db = SQLAlchemy(app)
 db.create_all()"""
 
+
+
+def determine_range(s:str):
+    number = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
+              "V", "W", "X", "Y", "Z"]
+    begin = number.index(s[0]) * 260 + number.index(s[1]) * 10 + 1
+    end = begin + 9
+
+    return(begin,end)
 # ----------------------------------------
 # Central error handler. 
 # Converts abort() and unhandled application exceptions to JSON responses, and logs them
@@ -62,66 +73,269 @@ def login():
         password = userInfo_dict["password"]
 
 
-        user =  User.query.filter_by(accountName=username).first()
+        # first to a check and see if the user is already in the activeSessionList
+        value = [sess for sess in activeSessionList if isinstance( sess.action,  LoginOrderCommand) and sess.currentUser.accountName == username and sess.currentUser.password == password ]
+        if(len(value) == 1):
+            # each user should only have one Session() at a time
+            return {"session" : value[0].currentUser.sessionId}
+        else:
+            # real login logic
+            user =  User.query.filter_by(accountName=username).first()
 
-        # will throw exectipin if user is none
-        if(user.password == password):
-            # TODO pass
-            with lock:
-                use = [u for u in loginedUsers if u.accountName == username]
-            if len(use) == 0:
-                # means the current user is not logined
+            # will throw exectipin if user is none
+            if user is None:
+                abort(403, description="Invalid username or password")
 
-
-                newSession = uuid.uuid4() # random generate a session
+            elif(user.password == password):
+                # TODO pass
                 with lock:
-                    while len( [u for u in loginedUsers if u.sessionId == newSession ]) !=0:
-                        newSession = uuid.uuid4()  # random generate a session
+                    use = [u for u in loginedUsers if u.accountName == username]
+                if len(use) == 0:
+                    # means the current user is not logined
+
+                    # check to see could the user be in the activeSessionList
+
+                    newSession = uuid.uuid4() # random generate a session
+                    with lock:
+                        while len( [u for u in loginedUsers if u.sessionId == newSession ]) !=0:
+                            newSession = uuid.uuid4()  # random generate a session
 
 
-                user.sessionId = newSession
-                loginedUsers.append(user) # add user to logined list
+                    user.sessionId = newSession
+                    # create a Session() with LoginOrderCommand,
+                    loginSession = Session(newSession,LoginOrderCommand(user,None), date.today(), user)
+                    # store session into the list
+                    activeSessionList.append(loginSession)
 
-                # return the generate session
-                return {"session" : newSession}
+
+                    #loginedUsers.append(user) # add user to logined list
+
+                    # return the generate uuid
+                    return {"session" : newSession}
+
+                else:
+                    # user already logined on other device
+                    #TODO: what if connection is lost on the way back?
+                    abort(405, description="Your account is login on other device")
 
             else:
-                # user already logined on other device
-
-                abort(405, description="Your account is login on other device")
-
-
-        else:
-            # password does not equal
-            abort(403, description="Invalid username or password")
-
+                # password does not equal
+                abort(403, description="Invalid username or password")
+    except KeyError as e:
+        abort(404, description="Incorrect format")
     except Exception as e:
-        abort(403, description="Invalid username or password")
+
+        if(e.code ==405):
+            abort(405, description="Your account is login on other device")
+        elif(e.code == 403):
+            abort(403, description="Invalid username or password")
+        else:
+            abort(404, description="Incorrect format")
     #return jsonify([product.to_dict() for product in products])
 
+
+@app.route("/confirm", methods=['POST'])
+def confirm_action():
+    userInfo_dict = request.get_json()
+    try:
+        userUuid = userInfo_dict["session"]  # data of uuid
+    except Exception as b:
+        abort(400, "Incorrect format")
+
+    try:
+
+        # check if there is a Session() contains the same
+        with lock:
+            for sess in activeSessionList:
+                if str(sess.sessionUUID) == userUuid:
+                    sess.execute({})
+                    activeSessionList.remove(sess)
+                    return flask.Response(200) # go out of loop,
+
+            # if still here, means it did not find a session that match
+            raise Exception
+
+    except Exception as e:
+        abort(404, description="Did not find valid session with the uuid provided")
 
 
 @app.route("/islogin", methods=['POST'])
 def is_login():
     userInfo_dict = request.get_json()
 
+    try:
+        username = userInfo_dict["accountName"]
 
-    username = userInfo_dict["accountName"]
-    password = userInfo_dict["password"]
 
-    with lock:
-        u_list = [u for u in loginedUsers if u.accountName == username]
-        if(len(u_list) == 0):
-            # means has not login
-            abort(404, "User has not logined")
+        with lock:
+            u_list = [u for u in loginedUsers if u.accountName == username]
+            if(len(u_list) == 0):
+                # means has not login
+                abort(400, "User has not logined")
 
-        else:
+            else:
+                return flask.Response(200)
+    except Exception as e:
+        if(e.code == 400):
+            abort(400, "User has not logined")
+        abort(404, description="Incorrect format information")
+
+
+@app.route("/pickedUpOrder/<int:order_id>", methods=['POST'])
+def is_pickup_by_user(order_id:int):
+    userInfo_dict = request.get_json()
+    try:
+        userUuid = userInfo_dict["session"]
+    except Exception:
+        abort(404, "Incorrect format information")
+
+    try:
+        user = find_login_user(userUuid)
+        #ord = find_order(order_id)
+
+        if(len([o for o in user.pickedUpOrders if o.id == order_id]) == 1):
             return flask.Response(200)
+        else:
+            abort(404, "Not pickedup by user")
+    except Exception as e:
+        abort(404, "incorrect format")
+@app.route("/orderList",methods=['POST'])
+def order():
+    userInfo_dict = request.get_json()
 
+    try:
+        userUuid = userInfo_dict["session"]
+        workingSection = userInfo_dict["section"]
+    except Exception:
+        abort(404,description="incorrect format")
+
+    try:
+
+
+        with lock:
+            users = [u for u in loginedUsers if str(u.sessionId) == str(userUuid)]
+        if(len(users) == 0):
+            # no user login with this id
+            abort(403, description="incorrect uuid")
+        else:
+            section = workingSection.split("-")
+            range1 = determine_range(section[0])
+            range2 = determine_range(section[1])
+
+            orderActions = OrderAction.query.filter(OrderAction.locationId >= range1[0] ).all()
+            filteredOrderActions = [o for o in orderActions if o.locationId <= range2[1]]
+
+
+            # give a list of order action correspond to it
+
+            returnOrders = []
+            for ordAct in filteredOrderActions:
+                ord = Order.query.filter_by(id=ordAct.fromOrderID).all()
+                for o in ord:
+                    if o not in returnOrders and o.locked==False:
+                        returnOrders.append(o)
+
+            #message = []
+            #length = len(filteredOrderActions)
+            #for i in range(1, length+1):
+
+               # message.append(filteredOrderActions[i-1].to_dict())
+            x= flask.jsonify([ ords.to_dict() for ords in returnOrders])
+
+            return flask.jsonify([ ords.to_dict() for ords in returnOrders])
+
+
+    except Exception as e:
+        if(e.code == 403):
+            abort(403, description="incorrect uuid")
+        abort(404, description="Incorrect format information")
+
+@app.route("/pickOrder",methods=['POST'])
+def pick_order():
+    userInfo_dict = request.get_json()
+
+    try:
+        userUuid = userInfo_dict["session"]
+        orderId = int(userInfo_dict["orderID"])
+        assignBarcode = int(userInfo_dict["assignedBarcode"])
+    except Exception as e:
+        abort(404, description="incorrect format")
+
+    try:
+
+        #TODO: could user pick up? check for twice action
+        # first check if the server is already
+        # check and see if the order is already in a Session() in the activeSessionList
+        ordSess = [ses for ses in activeSessionList if isinstance(ses.action, GetOrderCommand) and ses.sessionUUID ==userUuid ]
+        if(len(ordSess)) == 1:
+            # means the request has already received by user,
+            # return information it need
+
+            return ordSess[0].action.correspondOrder.to_dict_jsonify()
+        else:
+            with lock:
+                # confirm if this order is still in order list and have not been locked
+                matchOrder = find_order(orderId)
+                if matchOrder != None:
+                    if (matchOrder.locked == True):
+                        abort(404, description="This order has already been picked up by someone else")
+                    else:
+                        # means matchOrder is not locked and has not been picked up
+
+
+
+                        # assign the following order to the user
+                        user = find_login_user(userUuid)
+                        if (user == None):
+                            # means a invalid session,
+                            abort(403)
+                        else:
+
+                            matchOrder.locked = True;
+                            if(matchOrder.barcodeId == 0):
+                                # means was not assigned previously
+                                matchOrder.barcodeId = assignBarcode
+
+                            # a valid user with valid order id
+                            getOrderSession = Session(userUuid, GetOrderCommand(user, matchOrder),date.today(),user )
+                            activeSessionList.append(getOrderSession)
+                            db.session.add(matchOrder)  # change to database
+
+                            matchOrder.load_orderActions()
+
+                            db.session.commit()
+
+                            return matchOrder.to_dict_jsonify()
+
+                else:
+                    # means there is not a order correspond to this
+                    abort(404)  # no id associate with this order
+
+
+    except Exception as e:
+        if(e.code == 403):
+            abort(403, description="incorrex`ct uuid")
+        elif(e.code == 404 and e.message == "This order has already been picked up by someone else"):
+            abort(404, description="This order has already been picked up by someone else")
+        else:
+            abort(404, description="Incorrect format information")
 
 #TODO
 # need another thread to regularly clear out the Command /activeUserSession, also for logined user??
 
+def find_login_user(uuid:str):
+    loginUser = [log for log in loginedUsers if str(log.sessionId) == str(uuid)]
+    if(len(loginUser) == 1):
+        return loginUser[0]
+    else:
+        return None
+
+def find_order(id:int):
+    ords = Order.query.filter_by(id=id).first()
+    if ords != None:
+        return ords
+    else:
+        return None
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
 

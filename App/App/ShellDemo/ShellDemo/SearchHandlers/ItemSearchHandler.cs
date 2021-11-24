@@ -32,14 +32,27 @@ namespace ShellDemo.SearchHandlers
             var dataStore = DependencyService.Get<IDataStore<Item>>();
             var result = await dataStore.FindItemsAsync(keyword);
             var list = result.ToList();
-            ItemsSource = list;
+            try
+            {
+               /* MobileApp.GetSingletion().orders.Find((Order ord) =>
+                           {
+                               return ord.ID == Int32.Parse(keyword);
+
+                           });*/
+                ItemsSource = list;
+            }catch (Exception e)
+            {
+                list = null;
+            }
+
+
         }
 
         protected override void OnItemSelected(object item)
         {
             base.OnItemSelected(item);
 
-            var page = new ItemDetailPage(new ItemDetailViewModel(item as Item));
+            var page = new OrderDetailPage(new OrderDetailViewModel(item as Order));
             _ = Shell.Current.Navigation.PushAsync(page);            
         }
     }

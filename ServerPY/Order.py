@@ -1,7 +1,10 @@
 import  datetime
+
+import flask
+
 from Enumerables.BoxSize import BoxSize
 from OrderAction import  OrderAction
-from Database import db
+from Database import db,orm
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     barcodeId = db.Column(db.Integer, nullable=True)
@@ -10,23 +13,44 @@ class Order(db.Model):
     errorOccurred = db.Column(db.Boolean(False), nullable=False)
     locked = db.Column(db.Boolean(False), nullable=False)
     message =  db.Column(db.String(100), nullable=True)
-    orderActionsId = db.Column(db.String(10000), nullable=True)
+    nextOrderActionIndex = db.Column(db.Integer, nullable=False)
+        # indicate which OrderActionIndex has not been completed
+        # note: the index refer to a order that has its orderAction been sorted
+        #TODO: add to documentation
+    #orderActionsId = db.Column(db.String(10000), nullable=True)
         # a string contains all the orderActionId, Ex: "1212,2323,3232"
 
-    orderActions = []
+    @orm.reconstructor
+    def __init__(self, **kwargs):
+        super(Order, self).__init__(**kwargs)
+        self.orderActions = []
 
+    def load_orderActions(self):
+        ordActs = OrderAction.query.filter_by(id=self.id).all()
+        ordActs = sorted(ordActs, key=self.sortOrderActionsPredicate)  #ensure that returns a sorted list of orderactions
+        for ord in ordActs:
+            self.orderActions.append(ord)
+
+    def sortOrderActionsPredicate(self, ord):
+        number = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+                  "U",
+                  "V", "W", "X", "Y", "Z"]
+        # sort the orderActions base on locationID
+        return ord.locationId
+
+    def to_dict_jsonify(self):
+        return flask.jsonify([ordAct.to_dict() for ordAct in self.orderActions])
     def to_dict(self):
-        message = {}
+        """message = {}
         for i in range(1,len(self.orderActions)+1):
-            message["orderAction"+ str(i)] = self.orderActions[i-1].to_dict()
+            message["orderAction"+ str(i)] = self.orderActions[i-1].to_dict()"""
         # have the rest of the sloot to be null
 
 
 
 
-        return {"id":self.id, "barcodeID":self.barcodeId, "boxSize":self.boxSize.name, "orderDate":str(self.orderDate), "errorOccurred":self.errorOccured,
-                "locked":self.locked, "message":self.message,
-                "orderActions": message
+        return {"id":self.id, "barcodeID":self.barcodeId, "boxSize":self.boxSize, "orderDate":str(self.orderDate), "errorOccurred":self.errorOccurred,
+                "locked":self.locked, "message":self.message
                 }
 
     # exception should be catch when called,
@@ -35,7 +59,7 @@ class Order(db.Model):
         self.barcodeId = data["barcodeID"]
         self.boxSize = BoxSize[data["boxSize"]]
         self.orderDate = datetime.date.fromisoformat(data["orderDate"])
-        self.errorOccured = data["errorOccurred"]
+        self.errorOccurred = data["errorOccurred"]
         self.locked = data["locked"]
         self.message = data["message"]
 
@@ -44,5 +68,5 @@ class Order(db.Model):
             ord = OrderAction()
             ord.from_dict(data["orderActions"]["orderAction" + str(i)])
             self.orderActions.append(ord)
-
+        print()
 

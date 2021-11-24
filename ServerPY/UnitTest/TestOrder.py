@@ -6,27 +6,9 @@ from Enumerables.ActionType import ActionType
 import datetime
 from Enumerables.BoxSize import BoxSize
 from Order import Order
+from OrderAction import OrderAction
 
 
-class OrderAction():
-    def __init__(self, id=0, fromOrderID=0, action=ActionType.Supply, quantity=0):
-        self.id = id
-        self.fromOrderID = fromOrderID  # how the databseId of the order it came from
-        self.action = action
-        self.quantity = quantity
-
-
-
-    def to_dict(self):
-        return {"id": self.id, "fromOrderID": self.fromOrderID, "action": self.action.name, "quantity": self.quantity}
-
-    # exception should be handle by its caller
-    # should also check if the data has data or not
-    def from_dict(self, data:dict):
-      self.id = data["id"]
-      self.fromOrderID = data["fromOrderID"]
-      self.action = ActionType[data["action"]]
-      self.quantity = data["quantity"]
 
 
 
@@ -36,11 +18,10 @@ class OrderActionTestCase(unittest.TestCase):
     maxDiff = None
     def test_to_dict(self):
         t = datetime.date(2021,10,1)
-        ord = Order(1,2323,BoxSize.S , t, "test order")
+        ord = Order(id=1,barcodeId=2323,boxSize=BoxSize.S , orderDate=t, errorOccurred=False, locked=False, message="test order")
 
 
-        orderAction1 = OrderAction()
-        orderAction1.from_dict({"id": 1, "fromOrderID":1, "action": "Supply", "quantity":10})
+        orderAction1 = OrderAction(id=10 , fromOrderID=2031,action=ActionType(1).name, quantity=10, itemBarcode=22332, locationId=2)
 
         ord.orderActions.append(orderAction1)
         dictInfo = ord.to_dict()
@@ -55,7 +36,8 @@ class OrderActionTestCase(unittest.TestCase):
                 "locked":False,
                 "message":"test order",
                 "orderActions":{
-                    "orderAction1":{"id": 1, "fromOrderID":1, "action": "Supply", "quantity":10}
+                    "orderAction1":{"id": 10, "fromOrderID":2031, "action": "Pick", "quantity":10, "itemBarcode":22332, "locationId":2}
+
                 }
             }
             , ord.to_dict(),"errror in dict"
@@ -73,8 +55,8 @@ class OrderActionTestCase(unittest.TestCase):
                 "locked": True,
                 "message": "test",
                 "orderActions": {
-                    "orderAction1": {"id": 1, "fromOrderID": 1, "action": "Supply", "quantity": 10},
-                    "orderAction2": {"id": 4, "fromOrderID": 1, "action": "Supply", "quantity": 10}
+                    "orderAction1":{"id": 5, "fromOrderID":2031, "action": "Pick", "quantity":10, "itemBarcode":22332, "locationId":2},
+                    "orderAction2":{"id": 10, "fromOrderID":2031, "action": "Pick", "quantity":10, "itemBarcode":22332, "locationId":2}
                 }
             }
         )
@@ -83,7 +65,7 @@ class OrderActionTestCase(unittest.TestCase):
         self.assertTrue(ord.barcodeId == 2323, "barcode Id")
         self.assertTrue(ord.boxSize == BoxSize.S, "boxsize")
         self.assertTrue(ord.orderDate == datetime.date(2021,10,1), "datetime")
-        self.assertTrue(ord.errorOccured == False, "errorOccurred")
+        self.assertTrue(ord.errorOccurred == False, "errorOccurred")
         self.assertTrue(ord.locked == True, "locked")
         self.assertTrue(ord.message == "test", "message")
         self.assertTrue(len(ord.orderActions) == 2)

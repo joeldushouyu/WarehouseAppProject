@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShellDemo.Views.OrderListPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"  
+             xmlns:model="clr-namespace:ShellDemo.Models"  
+             xmlns:searchHandlers="clr-namespace:ShellDemo.SearchHandlers"
+            
+             x:Name="BrowseItemsPage">
+
+
+
+    <Shell.SearchHandler>
+        <searchHandlers:ItemSearchHandler 
+            Placeholder="Search Items"
+            ShowsResults="True">
+            <searchHandlers:ItemSearchHandler.ItemTemplate>
+                <DataTemplate x:DataType="model:Order">
+                    <StackLayout>
+                        <Label Text="{Binding ID}" />
+                        <Label Text="{Binding Message}" FontAttributes="Italic" />
+
+                    </StackLayout>
+
+                </DataTemplate>
+            </searchHandlers:ItemSearchHandler.ItemTemplate>
+        </searchHandlers:ItemSearchHandler>
+    </Shell.SearchHandler>
+
+    <!--
+      x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.
+      https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
+    -->
+
+    <StackLayout Padding="10"  >
+        <Label x:DataType="local:OrderListViewModel" Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding isErrorMessageVisible}" />
+    <RefreshView x:DataType="local:OrderListViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+
+
+
+        <CollectionView x:Name="OrdersListView"
+                ItemsSource="{Binding Orders}"
+                SelectionMode="None">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10" x:DataType="model:Order">
+
+                        <Label Text="{Binding BoxSize}" 
+                            LineBreakMode="NoWrap" 
+                            Style="{DynamicResource ListItemTextStyle}" 
+                            FontSize="16" />
+                        <Label Text="{Binding Message}" 
+                            LineBreakMode="NoWrap"
+                            Style="{DynamicResource ListItemDetailTextStyle}"
+                            FontSize="13" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                NumberOfTapsRequired="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:OrderListViewModel}}, Path=OrderTapped}"		
+                                CommandParameter="{Binding .}">
+                            </TapGestureRecognizer>
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+    </StackLayout>
+</ContentPage>
