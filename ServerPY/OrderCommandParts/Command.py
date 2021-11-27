@@ -9,7 +9,7 @@ class Command():
         self.currentUser = currentUser # the user that current holds this
         self.correspondOrder = order
 
-    def execute(self, data:dict):
+    def execute(self):
         #TODO: execute the command in user
         pass
 

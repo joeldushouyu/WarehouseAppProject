@@ -39,6 +39,3 @@ def convert_picture_to_byte_array():
     imgByteArr = imgByteArr.getvalue()
     return imgByteArr
 
-p = Item(itemBarcode=, image=convert_picture_to_byte_array(),quantity=10, notificationType="Maintance ", notificationDate="2021-12-9",weight=0.2 , locationID=3)
-db.session.add(p)
-db.session.commit()

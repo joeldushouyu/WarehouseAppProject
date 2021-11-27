@@ -5,17 +5,39 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using ZXing;
 
 namespace ShellDemo.Views
 {
     public partial class PickRestockPage : ContentPage
     {
-        public Item Item { get; set; }
+    
 
-        public PickRestockPage(Order ord, OrderAction act)
+        public PickRestockPage(PickRestockViewModel pick)
         {
+            ZxingScan = new ZXing.Net.Mobile.Forms.ZXingScannerView();
             InitializeComponent();
-            BindingContext = new PickRestockViewModel(ord, act);
+
+            BindingContext = pick;
+            pick.scanner = this.ZxingScan;
+        }
+
+        void ZXingScannerView_OnScanResult(ZXing.Result result)
+        {
+            PickRestockViewModel ord = (PickRestockViewModel)this.BindingContext;
+            ord.ItemBarcodeByUser = result.Text;
+        }
+
+        private void OnPicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PickRestockViewModel ord = this.BindingContext as PickRestockViewModel;
+            var picker = (Picker)sender;
+            int selectedIndex = picker.SelectedIndex;
+
+            if (selectedIndex != -1)
+            {
+                ord.UserAction = picker.Items[selectedIndex];
+            }
         }
     }
 }

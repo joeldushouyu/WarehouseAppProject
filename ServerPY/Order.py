@@ -13,7 +13,7 @@ class Order(db.Model):
     errorOccurred = db.Column(db.Boolean(False), nullable=False)
     locked = db.Column(db.Boolean(False), nullable=False)
     message =  db.Column(db.String(100), nullable=True)
-    nextOrderActionIndex = db.Column(db.Integer, nullable=False)
+
         # indicate which OrderActionIndex has not been completed
         # note: the index refer to a order that has its orderAction been sorted
         #TODO: add to documentation
@@ -26,7 +26,7 @@ class Order(db.Model):
         self.orderActions = []
 
     def load_orderActions(self):
-        ordActs = OrderAction.query.filter_by(id=self.id).all()
+        ordActs = OrderAction.query.filter_by(fromOrderID=self.id).all()
         ordActs = sorted(ordActs, key=self.sortOrderActionsPredicate)  #ensure that returns a sorted list of orderactions
         for ord in ordActs:
             self.orderActions.append(ord)
@@ -68,5 +68,5 @@ class Order(db.Model):
             ord = OrderAction()
             ord.from_dict(data["orderActions"]["orderAction" + str(i)])
             self.orderActions.append(ord)
-        print()
+
 

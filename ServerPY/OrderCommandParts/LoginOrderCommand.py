@@ -8,7 +8,7 @@ class LoginOrderCommand(Command):
 
 
 
-    def execute(self, data:dict):
+    def execute(self):
         #TODO: execute the command in user
         self.OnRelease()
         loginedUsers.append(self.currentUser) # add the current user into

@@ -23,7 +23,7 @@ namespace ShellDemo.Models
             }
         }
 
-        
+
         private string _accountName = "";
         [JsonProperty("accountName")]
         public string AccountName
@@ -37,10 +37,11 @@ namespace ShellDemo.Models
                 _accountName = value;
             }
         }
-        
+
         private string _workingSection = "";
 
         [JsonProperty("section")]
+        // potentially no longer needs to by a JsonProperty
         public string WorkingSection
         {
             get
@@ -53,7 +54,7 @@ namespace ShellDemo.Models
             }
         }
 
-        
+
 
         private string _currentSessionUUID;
         [JsonProperty("session")]
@@ -90,19 +91,132 @@ namespace ShellDemo.Models
         public List<Order> Orders
         {
             get => _orders;
-            set => value = _orders;
+            set
+            {
+                _orders = value;
+
+                
+            }
+        }
+        private List<OrderAction> _sortedOrderActions;
+        public List<OrderAction> SortedOrderActions {
+
+            get => _sortedOrderActions;
+            set => _sortedOrderActions = value;
         }
 
-        public int currentOrderIndex
+
+        public void SortOrderActions()
         {
-            // iterate each order, return the first one that currentOrderActionIndex is false
+            _sortedOrderActions.Clear();
+            // get current user's picking range
+            List<int> pickingRange = CalculatePickingRange();
+            int beginRange = pickingRange[0];
+            int endRange = pickingRange[1];
+            // first get all orderActions in the _orders that are within user's picking range
+
+            foreach(Order pickedOrder in _orders)
+            {
+                foreach(OrderAction ordAct in pickedOrder.OrderActions)
+                {
+                    if(ordAct.LocationId >= beginRange && ordAct.LocationId <= endRange)
+                    {
+                        this.SortedOrderActions.Add(ordAct); // add this Orderaction into range.
+                  
+
+                    }
+                }
+            }
+
+            this.SortedOrderActions.Sort((OrderAction ord1, OrderAction ord2) => { return ord1.CompareTo(ord2); });
+
+            // now check to see if whether or not user start picking from location AA0 which is locationID 1 in database
+            // If does, the app will first make user pick up all the items need later on for each Supply action
+            if (beginRange == 1)
+            {
+                foreach (Order pickedOrder in _orders)
+                {
+                    foreach (OrderAction ordAct in pickedOrder.OrderActions)
+                    {
+                        if (ordAct.LocationId >= beginRange && ordAct.LocationId <= endRange && ordAct.Action=="Supply")
+                        {
+                            this.SortedOrderActions.Insert(0,ordAct); // add this Orderaction into the list
+                            ordAct.Initialpick = false;
+                        }
+                        else
+                        {
+                            ordAct.Initialpick = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ; // do nothing
+            }
+
+            //now sort them base on the locationID in each orderAction
+            /*this.SortedOrderActions.Sort((OrderAction act1, OrderAction act2) => { 
+                
+                if(act1.LocationId < act2.LocationId)
+                {
+                    return -1;
+                }
+                else if(act1.LocationId == act2.LocationId)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            });*/
+        
+
         }
+        public List<int> CalculatePickingRange()
+        {
+            List<string> sectionHeaders =new List<string> {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
+                                                             "V", "W", "X", "Y", "Z" };
+
+            List<string> sects = new List<string>(this.WorkingSection.Split('-'));
+
+            string beginSection = sects[0];
+            string endSection = sects[1];
+
+            int beginningRange = sectionHeaders.IndexOf(beginSection[0].ToString()) * 260 + sectionHeaders.IndexOf(beginSection[1].ToString()) * 10  + 1;
+
+            int endRange = sectionHeaders.IndexOf(endSection[0].ToString()) * 260 + sectionHeaders.IndexOf(endSection[1].ToString()) * 10 + 1 + 9;
+
+
+            List<int> returnList = new List<int>();
+            returnList.Add(beginningRange);
+            returnList.Add(endRange);
+
+            return returnList;
+        }
+        /*
+        public int currentOrderIndex()
+        {
+            for(int i = 0; i < this.Orders.Count; i++)
+            {
+                // iterate each order, return the first order.currentOrderaction() that is not -1
+                if (this.Orders[i].currentOrderActionIndex() != -1)
+                {
+                    return i; // means this order has not completed by user.
+                }
+           
+            }
+            return -1;  //means all orders has completed
+            
+        }*/
         public User()
         {
             _currentSessionUUID = null; // inidication that is not logined
             // default working section
             _workingSection = "AA-AA";
             _orders = new List<Order>();
+            _sortedOrderActions = new List<OrderAction>();
         }
 
       

@@ -25,7 +25,11 @@ namespace ShellDemo
         {
             await Shell.Current.GoToAsync("//LoginPage");
         }
+        private async void OnSettingClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//SettingPage");
+        }
 
-   
+
     }
 }

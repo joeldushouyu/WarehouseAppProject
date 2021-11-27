@@ -1,22 +1,26 @@
 ﻿using ShellDemo.Models;
+using ShellDemo.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 using ZXing;
+using Flurl;
+using Flurl.Http;
 
 namespace ShellDemo.ViewModels
 {
     public class PickRestockViewModel : BaseViewModel
     {
-       
+
         public string Action
         {
             get => CurrentOrderAction.Action;
         }
 
-        public int Quantity
+        public long Quantity
         {
             get => CurrentOrderAction.Quantity;
         }
@@ -28,12 +32,30 @@ namespace ShellDemo.ViewModels
 
         public string OrderBarcodeID
         {
-            get => CurrentOrder.barCode.ToString();
+            get => CurrentOrder.BarCode.ToString();
         }
 
         public string ItemBarcode
         {
             get => CurrentOrderAction.ItemBarcode.ToString();
+        }
+
+        public string Location
+        {
+            get
+            {
+                if(this.CurrentOrderAction.Initialpick == true)
+                {
+                    return this.CurrentOrderAction.WorkingSection();
+                }
+                else
+                {
+                    return "Docker Area";
+                }
+                
+            }
+            
+
         }
 
         private Order CurrentOrder;
@@ -45,7 +67,12 @@ namespace ShellDemo.ViewModels
             get => _userAction;
             set
             {
-                _userAction = value;
+                var data = value;
+               
+                SetProperty(ref _userAction, value);
+                OnPropertyChanged(nameof(CanSave));
+                OnPropertyChanged(nameof(ErrorMessage));
+                
             }
         }
 
@@ -56,8 +83,15 @@ namespace ShellDemo.ViewModels
         {
             get => _quantityByUser;
             set
-            {   
-                _quantityByUser = value;
+            {
+                var data = value;
+              
+                SetProperty(ref _quantityByUser, value);
+                OnPropertyChanged(nameof(CanSave));
+                OnPropertyChanged(nameof(ErrorMessage));
+
+
+
             }
         }
 
@@ -67,18 +101,12 @@ namespace ShellDemo.ViewModels
             get => _itemBarcodeByUser;
             set
             {
-                string newBarcode = value;
-                if (valideBarCode(value))
-                {
-                    SetProperty(ref _itemBarcodeByUser, value);
-                    OnPropertyChanged(nameof(ErrorMessage));
-                    IsScanning = false;
-                }
-                else
-                {
-                    OnPropertyChanged(nameof(ErrorMessage));
-                }
-
+              
+                SetProperty(ref _itemBarcodeByUser, value);
+                OnPropertyChanged(nameof(CanSave));
+                OnPropertyChanged(nameof(ErrorMessage));
+                IsScanning = false;
+                
             }
         }
 
@@ -94,25 +122,82 @@ namespace ShellDemo.ViewModels
             }
         }
 
-        private string _errorMessage;
+        private string _errorMessage="";
         public string ErrorMessage
         {
             get => _errorMessage;
-            set {
-                SetProperty(ref _errorMessage, value);
-                OnPropertyChanged(nameof(CanSave));
+
+        }
+
+        private bool _canSave = false;
+
+        public bool CanSave
+        {
+            get
+            {
+                _canSave = true;
+                _errorMessage = "";
+
+                // barcode
+                try
+                {
+                    int numb = Int32.Parse(this.ItemBarcode);
+                    if (numb == 0 || numb != Int32.Parse(this.ItemBarcodeByUser))
+                    {
+                        throw new Exception("");
+                    }
+                    _errorMessage += "";
+                    
+                }
+                catch (Exception e)
+                {
+                    _errorMessage += "Not valid Barcode ID\n";
+                    _canSave = false;
+                }
+
+                //quantity
+
+                try
+                {
+                    if (Int32.Parse(this.QuantityByUser) == this.Quantity)
+                    {
+                        _errorMessage += "";
+                        
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    _errorMessage += "Not valid or correct quantity input\n";
+                     _canSave = false;
+                }
+                //action
+                if (this.UserAction == this.Action)
+                {
+                    _errorMessage += "";
+                 
+                }
+                else
+                {
+                    _errorMessage += "Incorrect action performed\n";
+                    _canSave = false;
+                }
+
+                return _canSave;
             }
         }
 
-
-        public bool CanSave => ValidateSave();
-
         public PickRestockViewModel(Order currentOrder, OrderAction currentOrderAction)
         {
-            this.CurrentOrder = currentOrder; 
+            this.CurrentOrder = currentOrder;
             this.CurrentOrderAction = currentOrderAction;
-            SaveCommand = new Command(OnSave, ValidateSave);
+            SaveCommand = new Command(OnSave);
             CancelCommand = new Command(OnCancel);
+            ScanningCommand = new Command(OnScanning);
             this.PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
         }
@@ -121,33 +206,169 @@ namespace ShellDemo.ViewModels
 
 
 
-        private bool ValidateSave()
-        {
-            ErrorMessage = "";
-            return validateQuatity(this.QuantityByUser) && valideBarCode(this._itemBarcodeByUser) && validateAction(this.UserAction);
-     
-
-        }
-
         
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
+        public Command ScanningCommand { get; }
+        
+
 
         private async void OnCancel()
         {
             await Shell.Current.Navigation.PopModalAsync();
         }
 
-        private async void OnSave()
+        private bool ConfirmUpdateOrder(UserSession userSess)
         {
+            try
+            {
+                string url = MobileApp.GetSingletion().BaseUrl + "/confirm";
+                var respondCode = url.WithTimeout(20).PostJsonAsync(userSess).Result;
+                // means the server has successfully got the message from us.
+                return true;
+            }
+            catch(FlurlHttpTimeoutException e)
+            {
+                throw e;
            
+            }catch(FlurlHttpException e)
+            {
+                
+                int statusCode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
+                if(statusCode == 404)
+                {
 
-           // await DataStore.AddItemAsync(newItem);
+                    try
+                    {
+                        // it could be that the server could have already execute the command
+                        string url = MobileApp.GetSingletion().BaseUrl + "/readyToLogout";
+                        var respond = url.PostJsonAsync(userSess).Result;
+                        // if still here, means no exception occur and got 200 code
+                    }catch(FlurlHttpException es)
+                    {
+                        throw es;
+                    }
 
-            await Shell.Current.Navigation.PopModalAsync();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return false;
         }
 
-        public void OnPickerSelectedIndexChanged(object sender, EventArgs e)
+        public void OnSave()
+        {
+
+
+            // await DataStore.AddItemAsync(newItem);
+
+            //await Shell.Current.Navigation.PopModalAsync();
+            /*
+            this.CurrentOrderAction.Completed = true;
+            int nextOrderActionIndex = this.CurrentOrder.currentOrderActionIndex();
+            if(nextOrderActionIndex == -1)
+            {
+                // means complete
+            }
+            else
+            {
+                /*var page = new PickRestockPage(new PickRestockViewModel(this.CurrentOrder, this.CurrentOrder.OrderActions[this.CurrentOrder.currentOrderActionIndex()]));
+                _ = Shell.Current.Navigation.PushAsync(page);
+                Shell.Current.Navigation.PopAsync();
+
+                //get the page before this page, which should be the OrderGettedListPage;
+                OrderGettedListPage page = Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 1] as OrderGettedListPage;
+                OrderGettedListViewModel viewModel = page.BindingContext as OrderGettedListViewModel;
+                viewModel.StartPicking();
+
+
+            }*/
+
+            this.CurrentOrderAction.Completed = true;
+            this.CurrentOrderAction.Initialpick = true;
+            List<OrderAction> sortedActions = MobileApp.GetSingletion().User.SortedOrderActions;
+            if(sortedActions.Count == 0)
+            {
+                // means all done
+                /*
+                try
+                {
+                    string updateUrl = MobileApp.GetSingletion().BaseUrl + "/updateOrder";
+                    var respond =  updateUrl.WithTimeout(20).PostJsonAsync(new UpdateOrderRequest
+                    {
+                        Session = MobileApp.GetSingletion().User.CurrentSessionUUID,
+                        Orders = MobileApp.GetSingletion().User.Orders
+                    }).Result;
+                    Console.WriteLine("success");
+
+                    ConfirmUpdateOrder(new UserSession
+                                {
+                                    Session=MobileApp.GetSingletion().User.CurrentSessionUUID
+                                    
+                                });
+
+                    MobileApp.GetSingletion().User.Orders.Clear();
+                   // return true;
+
+                var page = new UpdateOrderPage(new UpdaterOrderViewModel());
+                }
+                catch (FlurlHttpTimeoutException e)
+                {
+                    //return false;
+                }
+                catch (FlurlHttpException e)
+                {
+                   // return false;
+
+                }
+                catch (Exception e)
+                {
+                   // return false;
+                }*/
+                var page = new UpdateOrderPage(new UpdaterOrderViewModel());
+                _ = Shell.Current.Navigation.PushAsync(page);
+            }
+            else
+            {
+                // still have orderActions
+                OrderAction nextOrdAct = sortedActions[0];
+                sortedActions.Remove(nextOrdAct);
+                var correspondOrder = MobileApp.GetSingletion().User.Orders.Find((Order ord) => ord.IDAtDatabase == nextOrdAct.IDAtDatabase);
+                var page = new PickRestockPage(new PickRestockViewModel(correspondOrder, nextOrdAct));
+                _ = Shell.Current.Navigation.PushAsync(page);
+            }
+            
+            
+
+        }
+
+
+        private async Task<bool> UpdateOrder()
+        {
+            try
+            {
+                string updateUrl = MobileApp.GetSingletion().BaseUrl + "/updateOrder";
+                var respond = await updateUrl.WithTimeout(20).PostJsonAsync(new UpdateOrderRequest { Session = MobileApp.GetSingletion().User.CurrentSessionUUID,
+                                                                                                       Orders = MobileApp.GetSingletion().User.Orders});
+                Console.WriteLine("success");
+                return true;
+            }
+            catch(FlurlHttpTimeoutException e)
+            {
+                return false;
+            }catch(FlurlHttpException e)
+            {
+                return false;
+                
+            }catch(Exception e)
+            {
+                return false;
+            }
+        }
+
+        public void OnPicker_SelectedIndexChanged(object sender)
         {
             var picker = (Picker)sender;
             int selectedIndex = picker.SelectedIndex;
@@ -158,18 +379,21 @@ namespace ShellDemo.ViewModels
             }
         }
 
-        public void ZXingScannerView_OnScan()
-        {
-            valideBarCode(scanner.Result.Text);
-          
-        }
 
+        public void OnScanning()
+        {
+            IsScanning = true;
+
+            //ZXingScannerView_OnScan();
+
+        }
+        /*
         private bool valideBarCode(string newBarCode)
         {
             try
             {
                 int numb = Int32.Parse(newBarCode);
-                if (numb == 0)
+                if (numb == 0 || numb != Int32.Parse(this.ItemBarcode))
                 {
                     throw new Exception("");
                 }
@@ -185,12 +409,20 @@ namespace ShellDemo.ViewModels
         private bool validateQuatity(string quant)
         {
             try
-            {
-                ErrorMessage += "";
-                return true;
+            {   
+                if(Int32.Parse(quant) == this.Quantity)
+                {
+                    ErrorMessage += "";
+                    return true;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+                
             }catch(Exception e)
             {
-                ErrorMessage += "Not valid quantity input\n";
+                ErrorMessage += "Not valid or correct quantity input\n";
                 return false;
             }
         }
@@ -206,6 +438,6 @@ namespace ShellDemo.ViewModels
                 ErrorMessage += "Incorrect action performed\n";
                 return false;
             }
-        }
+        }*/
     }
 }

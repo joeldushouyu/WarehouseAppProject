@@ -1,9 +1,6 @@
 
-
-
-
 # the main class of the server
-import datetime
+
 from datetime import date
 
 import flask
@@ -12,6 +9,8 @@ from werkzeug.exceptions import HTTPException
 
 from OrderCommandParts.LoginOrderCommand import LoginOrderCommand
 from OrderCommandParts.GetOrderCommand import GetOrderCommand
+from OrderCommandParts.UpdateOrderCommand import UpdateOrderCommand
+from OrderCommandParts.ResetOrderCommand import  ResetOrderCommand
 from User import User
 from Database import app, loginedUsers, activeSessionList,db
 from threading import Lock
@@ -43,6 +42,7 @@ def determine_range(s:str):
     end = begin + 9
 
     return(begin,end)
+
 # ----------------------------------------
 # Central error handler. 
 # Converts abort() and unhandled application exceptions to JSON responses, and logs them
@@ -148,11 +148,11 @@ def confirm_action():
         with lock:
             for sess in activeSessionList:
                 if str(sess.sessionUUID) == userUuid:
-                    sess.execute({})
+                    sess.execute()
                     activeSessionList.remove(sess)
                     return flask.Response(200) # go out of loop,
 
-            # if still here, means it did not find a session that match
+            # if still here, meanxs it did not find a session that match
             raise Exception
 
     except Exception as e:
@@ -181,6 +181,7 @@ def is_login():
         abort(404, description="Incorrect format information")
 
 
+# check if the order is been pickedup by user
 @app.route("/pickedUpOrder/<int:order_id>", methods=['POST'])
 def is_pickup_by_user(order_id:int):
     userInfo_dict = request.get_json()
@@ -199,6 +200,26 @@ def is_pickup_by_user(order_id:int):
             abort(404, "Not pickedup by user")
     except Exception as e:
         abort(404, "incorrect format")
+
+@app.route("/readyToLogout", methods=['POST'])
+def user_ready_to_logout():
+    information = request.get_json()
+    try:
+        userUUID = information["session"]
+    except Exception:
+        abort(404, "incorrect format")
+
+    try:
+        user = find_login_user(userUUID)
+        if len(user.pickedUpOrders) ==0:
+            flask.Response(200)
+        else:
+            abort(404)
+    except Exception as e:
+        if(e.code == 404):
+            abort(404, description="User is not ready to logout yet")
+        else:
+            abort(404, description="incorrect format or invalid message")
 @app.route("/orderList",methods=['POST'])
 def order():
     userInfo_dict = request.get_json()
@@ -224,6 +245,7 @@ def order():
 
             orderActions = OrderAction.query.filter(OrderAction.locationId >= range1[0] ).all()
             filteredOrderActions = [o for o in orderActions if o.locationId <= range2[1]]
+            filteredOrderActions = [ordAct for ordAct in filteredOrderActions if ordAct.status ==False]
 
 
             # give a list of order action correspond to it
@@ -270,8 +292,8 @@ def pick_order():
         if(len(ordSess)) == 1:
             # means the request has already received by user,
             # return information it need
-
-            return ordSess[0].action.correspondOrder.to_dict_jsonify()
+            data = ordSess[0].action.correspondOrder.to_dict_jsonify()
+            return data
         else:
             with lock:
                 # confirm if this order is still in order list and have not been locked
@@ -292,7 +314,7 @@ def pick_order():
                         else:
 
                             matchOrder.locked = True;
-                            if(matchOrder.barcodeId == 0):
+                            if(int(matchOrder.barcodeId) == 0):
                                 # means was not assigned previously
                                 matchOrder.barcodeId = assignBarcode
 
@@ -304,8 +326,8 @@ def pick_order():
                             matchOrder.load_orderActions()
 
                             db.session.commit()
-
-                            return matchOrder.to_dict_jsonify()
+                            data = matchOrder.to_dict_jsonify()
+                            return data
 
                 else:
                     # means there is not a order correspond to this
@@ -314,14 +336,169 @@ def pick_order():
 
     except Exception as e:
         if(e.code == 403):
-            abort(403, description="incorrex`ct uuid")
+            abort(403, description="incorrexct uuid")
         elif(e.code == 404 and e.message == "This order has already been picked up by someone else"):
             abort(404, description="This order has already been picked up by someone else")
         else:
             abort(404, description="Incorrect format information")
 
-#TODO
-# need another thread to regularly clear out the Command /activeUserSession, also for logined user??
+
+
+
+@app.route("/resetOrder",methods=['POST'])
+def reset_order():
+    info_list = request.get_json()
+    update_order_list_dict = []
+
+    try:
+        userUUID = info_list["session"]
+        update_order_list_dict = info_list["OrderList"]
+
+
+
+    except Exception as e:
+        abort(404, description="incorrect format")
+
+    try:
+
+        # first, validate and see if it is a valide user UUID session
+        user =  find_login_user(userUUID)
+        if user == None:
+            # not valid uuid
+            abort(403)
+        else:
+            updateSess = [ses for ses in activeSessionList if isinstance(ses.action, ResetOrderCommand) and ses.sessionUUID ==userUUID ]
+            if len(updateSess) == 1:
+                # means it already has a Session()
+                # in other word,the user with the same UUID already requested before
+                return flask.Response(200)  # indicate that the server has already received the request
+            else:
+                tempOrderAction_dict_list = []
+                errorOrderIDList = []
+                for i in range(len(update_order_list_dict)):
+
+                    # find the order
+                    with lock:
+                        # do a validation check, ensure both order ID and orderAction ID correctly present on the server
+                        ord =  find_order( update_order_list_dict[i]["id"])
+                        if ord == None :
+                            # means the user pass a invalid order ID
+                            # simply ignore this specifc order update
+                            errorOrderIDList.append(update_order_list_dict[i]["id"])
+                            continue # next iteration
+                        elif 1 != len([orde for orde in user.pickedUpOrders if orde.id == update_order_list_dict[i]["id"]]):
+                            # means for some reason, Server was not notified that this user actually picked up this order
+                            # since someone else could have already pick up this order, server will ignore this specific order update
+                            errorOrderIDList.append(update_order_list_dict[i]["id"])
+                            continue
+                        else:
+                            tempOrderAction_dict = update_order_list_dict[i]["OrderActions"]
+                            for orderActDict in tempOrderAction_dict:
+                                orderAct = find_orderAction(orderActDict["id"])
+                                if orderAct == None:
+                                    # means did not find an OrderAction with the correspond id, inconsistent with data
+                                    errorOrderIDList.append(update_order_list_dict[i]["id"])
+                                elif (orderActDict["action"] != "Supply" and orderActDict["action"] != "Pick") or orderActDict["action"] != str(orderAct.action):
+
+                                    # incorrect action type
+                                    errorOrderIDList.append()
+                                elif int(orderActDict["quantity"]) <= 0:
+                                    abort(404)
+                                else:
+                                    #TODO: Also verify each item id?
+                                    tempOrderAction_dict_list.append(tempOrderAction_dict[0])
+                updateSession = Session(userUUID, UpdateOrderCommand(user, None, tempOrderAction_dict_list), date.today(), user)
+                activeSessionList.append(updateSession)
+                return flask.Response(200)
+
+    except Exception as e:
+        if(e.code == 403):
+            abort(403, description="incorrect uuid")
+        else:
+            abort(404, description="incorrect format or not valid data")
+
+
+
+@app.route("/updateOrder",methods=['POST'])
+def update_order():
+    info_list = request.get_json()
+    update_order_list_dict = []
+
+    try:
+        userUUID = info_list["session"]
+        update_order_list_dict = info_list["OrderList"]
+
+
+
+    except Exception as e:
+        abort(404, description="incorrect format")
+
+    try:
+
+        # first, validate and see if it is a valide user UUID session
+        user =  find_login_user(userUUID)
+        if user == None:
+            # not valid uuid
+            abort(403)
+        else:
+            updateSess = [ses for ses in activeSessionList if isinstance(ses.action, UpdateOrderCommand) and ses.sessionUUID ==userUUID ]
+            if len(updateSess) == 1:
+                # means it already has a Session()
+                # in other word,the user with the same UUID already requested before
+                return flask.Response(200)  # indicate that the server has already received the request
+            else:
+                tempOrderAction_dict_list = []
+                for i in range(len(update_order_list_dict)):
+
+                    # find the order
+                    with lock:
+                        # do a validation check, ensure both order ID and orderAction ID correctly present on the server
+                        ord =  find_order( update_order_list_dict[i]["id"])
+                        if ord == None or \
+                            1 != len([orde for orde in user.pickedUpOrders if orde.id == update_order_list_dict[i]["id"]]):
+                            abort(404)
+                        else:
+                            tempOrderAction_dict = update_order_list_dict[i]["OrderActions"]
+                            for orderActDict in tempOrderAction_dict:
+                                orderAct = find_orderAction(orderActDict["id"])
+                                if orderAct == None:
+                                    abort(404)
+                                elif (orderActDict["action"] != "Supply" and orderActDict["action"]!= "Pick") or orderActDict["action"]!= str(orderAct.action)  :
+
+                                    abort(404)
+                                elif int(orderActDict["quantity"]) <= 0:
+                                    abort(404)
+                                else:
+                                    #TODO: Also verify each item id?
+                                    tempOrderAction_dict_list.append(tempOrderAction_dict[0])
+                updateSession = Session(userUUID, UpdateOrderCommand(user, None, tempOrderAction_dict_list), date.today(), user)
+                activeSessionList.append(updateSession)
+                return flask.Response(200)
+
+
+
+
+
+    except Exception as e:
+        if(e.code == 403):
+            abort(403, description="incorrect uuid")
+        else:
+            abort(404, description="incorrect format or not valid data")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # now try to update the
 
 def find_login_user(uuid:str):
     loginUser = [log for log in loginedUsers if str(log.sessionId) == str(uuid)]
@@ -336,6 +513,16 @@ def find_order(id:int):
         return ords
     else:
         return None
+def find_orderAction(id:int):
+    orderAction = OrderAction.query.filter_by(id=id).first()
+    if orderAction != None:
+        return orderAction
+    else:
+        return None
+#TODO
+# need another thread to regularly clear out the Command /activeUserSession, also for logined user??
+
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host='localhost', port=5000, debug=True)
 

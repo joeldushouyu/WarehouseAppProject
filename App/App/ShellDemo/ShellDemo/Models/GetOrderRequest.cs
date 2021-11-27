@@ -21,9 +21,9 @@ namespace ShellDemo.Models
                 _session = value;
             }
         }
-        private int _orderID;
+        private long _orderID;
         [JsonProperty("orderID")]
-        public int OrderID
+        public long OrderID
         {
             get
             {

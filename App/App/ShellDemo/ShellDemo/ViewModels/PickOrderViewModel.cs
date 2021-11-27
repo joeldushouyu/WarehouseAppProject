@@ -88,9 +88,9 @@ namespace ShellDemo.ViewModels
                 OnPropertyChanged(nameof(ErrorGetOrderMessage));
             }
         }
-        public int OrderID => this.ord.IDAtDatabase;
+        public long OrderID => this.ord.IDAtDatabase;
 
-        public bool HaveBarcodeID => ord.barCode != 0;
+        public bool HaveBarcodeID => ord.BarCode != 0;
 
         public bool CanGetOrder => ErrorBarCodeMessage.Length == 0;
         public Command ScanCommand { get; }
@@ -98,7 +98,7 @@ namespace ShellDemo.ViewModels
         public PickOrderViewModel(Order ord)
         {
             this.ord = ord;
-            this._barCodeid = ord.barCode.ToString(); // if no barcode being assinged, it will default be 0
+            this._barCodeid = ord.BarCode.ToString(); // if no barcode being assinged, it will default be 0
             ScanCommand = new Command(OnScanning);
             PickOrderCommand = new Command(PickOrder);
 
@@ -135,11 +135,12 @@ namespace ShellDemo.ViewModels
                         // success, returns 200
                         return true;
 
+                        //TODO: handle timeout exception
 
                     }
                     catch (FlurlHttpException es)
                     {
-                        //here means just not login
+                        //here means just not login or the session is been clear out by server
                         throw es;
                     }
                 }

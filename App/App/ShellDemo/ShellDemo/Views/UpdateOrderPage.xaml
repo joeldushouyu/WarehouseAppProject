@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"
+             x:DataType="local:UpdaterOrderViewModel"
+             x:Class="ShellDemo.Views.UpdateOrderPage">
+    <ContentPage.Content>
+        <StackLayout>
+
+            <Button Text="Update with Server" Command="{Binding UpdateCommand}"/>
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

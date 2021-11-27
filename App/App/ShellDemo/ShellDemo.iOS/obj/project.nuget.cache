@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "0Q3bhi3Jppn4eiXKEdOd9bsKzE9Fgcs2kxe9KPw751dzjaOqrXaI5cQ0WGLkfiARpDZdYdEumpTqoeChxdeNkg==",
+  "dgSpecHash": "9YYkNQi+1jGK8mbRJ++A4ArRPUyc2A9EhbuYc7iGcSjlx1O21rZ5vLXXZ+hTu1mQsnY/TYsJTKt5EKWZgVF2yQ==",
   "success": true,
   "projectFilePath": "G:\\college life\\2.1\\cps320\\WarehouseProject\\WarehouseAppProject\\App\\App\\ShellDemo\\ShellDemo.iOS\\ShellDemo.iOS.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\joeld\\.nuget\\packages\\behaviors.forms\\1.4.0\\behaviors.forms.1.4.0.nupkg.sha512",
     "C:\\Users\\joeld\\.nuget\\packages\\flurl\\3.0.2\\flurl.3.0.2.nupkg.sha512",
     "C:\\Users\\joeld\\.nuget\\packages\\flurl.http\\3.2.0\\flurl.http.3.2.0.nupkg.sha512",
     "C:\\Users\\joeld\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",

@@ -34,11 +34,29 @@ namespace ShellDemo.ViewModels
             PickOrderCommand = new Command(() => StartPicking());
        
         }
-        private void StartPicking()
+        public  void StartPicking()
         {
-            //TODO: add more logic
+            //TODO: add more logic for Restock action
+            //First sort out all orderActions in sequenc
+            MobileApp.GetSingletion().User.SortOrderActions();
+            List<OrderAction> sortedActions = MobileApp.GetSingletion().User.SortedOrderActions;
+            if( sortedActions.Count == 0)
+            {
+                // means completed
+            }
+            else
+            {
 
-            var page = new PickRestockPage()
+                OrderAction nextOrdAct = sortedActions[0];
+                sortedActions.Remove(nextOrdAct);
+                var correspondOrder = MobileApp.GetSingletion().User.Orders.Find((Order ord) => ord.IDAtDatabase == nextOrdAct.IDAtDatabase);
+                var page = new PickRestockPage(
+                    new PickRestockViewModel(correspondOrder,  nextOrdAct) );
+
+                _ = Shell.Current.Navigation.PushAsync(page);
+            }
+
+           
         }
 
         private void ExecuteLoadItemsCommand()

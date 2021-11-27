@@ -9,6 +9,7 @@
     ".NETStandard,Version=v2.0/": {
       "ShellDemo/1.0.0": {
         "dependencies": {
+          "Behaviors.Forms": "1.4.0",
           "Flurl": "3.0.2",
           "Flurl.Http": "3.2.0",
           "NETStandard.Library": "2.0.3",
@@ -20,6 +21,18 @@
         },
         "runtime": {
           "ShellDemo.dll": {}
+        }
+      },
+      "Behaviors.Forms/1.4.0": {
+        "dependencies": {
+          "NETStandard.Library": "2.0.3",
+          "Xamarin.Forms": "5.0.0.2244"
+        },
+        "runtime": {
+          "lib/netstandard1.0/Behaviors.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "Flurl/3.0.2": {
@@ -223,6 +236,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Behaviors.Forms/1.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-z0D3U3LgiezsF+uKqG9KJdBTPpfjCZ+gG+ctRHLxC98WCVumBmPhCvBKwFVafMR0Ez87x617BQsgzK5ARu853g==",
+      "path": "behaviors.forms/1.4.0",
+      "hashPath": "behaviors.forms.1.4.0.nupkg.sha512"
     },
     "Flurl/3.0.2": {
       "type": "package",

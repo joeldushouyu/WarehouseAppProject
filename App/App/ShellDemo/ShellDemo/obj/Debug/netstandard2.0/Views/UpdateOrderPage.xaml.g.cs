@@ -8,17 +8,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Xamarin.Forms.Xaml.XamlResourceIdAttribute("ShellDemo.Views.NewItemPage.xaml", "Views/NewItemPage.xaml", typeof(global::ShellDemo.Views.NewItemPage))]
+[assembly: global::Xamarin.Forms.Xaml.XamlResourceIdAttribute("ShellDemo.Views.UpdateOrderPage.xaml", "Views/UpdateOrderPage.xaml", typeof(global::ShellDemo.Views.UpdateOrderPage))]
 
 namespace ShellDemo.Views {
     
     
-    [global::Xamarin.Forms.Xaml.XamlFilePathAttribute("Views\\NewItemPage.xaml")]
-    public partial class NewItemPage : global::Xamarin.Forms.ContentPage {
+    [global::Xamarin.Forms.Xaml.XamlFilePathAttribute("Views\\UpdateOrderPage.xaml")]
+    public partial class UpdateOrderPage : global::Xamarin.Forms.ContentPage {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Xamarin.Forms.Build.Tasks.XamlG", "2.0.0.0")]
         private void InitializeComponent() {
-            global::Xamarin.Forms.Xaml.Extensions.LoadFromXaml(this, typeof(NewItemPage));
+            global::Xamarin.Forms.Xaml.Extensions.LoadFromXaml(this, typeof(UpdateOrderPage));
         }
     }
 }

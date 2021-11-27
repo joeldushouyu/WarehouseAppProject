@@ -27,7 +27,6 @@ G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDem
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\App.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\AppShell.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\LoginPage.xaml.g.cs
-G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\NewItemPage.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\ShellDemo.AssemblyInfoInputs.cache
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\ShellDemo.AssemblyInfo.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\ShellDemo.csproj.CoreCompileInputs.cache
@@ -41,3 +40,6 @@ G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDem
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\PickOrderPage.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\OrderGettedDetailPage.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\OrderGettedListPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\PickRestockPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\SettingPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\UpdateOrderPage.xaml.g.cs

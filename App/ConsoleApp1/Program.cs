@@ -37,9 +37,9 @@ try {
 Object res = null;
 try
 {
-    //var x = await $"{baseUrl}/islogin".PostJsonAsync(new User { AccountName = "Jodel", Password = "200367" });
-    //url.SendJsonAsync(HttpMethod.Trace, data);
-    //res = await "http://127.0.0.1:5000/islogin".SendJsonAsync()
+    var x = await $"{baseUrl}/islogin".PostJsonAsync(new User { AccountName = "Jodel", Password = "200367" });
+    // url.SendJsonAsync(HttpMethod.Trace, data);
+    res = await "http://10.21.19.196:5000/islogin".GetAsync();
 
     User user = new User
     {
@@ -59,5 +59,8 @@ catch(Exception e)
 
 string s = "01121";
 Console.WriteLine(Int32.Parse(s));
+
+DateTime date = new DateTime(2001, 10, 10);
+Console.WriteLine(date.ToString("yyyy-MM-dd"));
 
 

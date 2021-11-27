@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"
+             x:DataType="local:SettingViewModel"
+             x:Class="ShellDemo.Views.SettingPage">
+
+    <ContentPage.Content>
+        <StackLayout>
+
+
+            <Picker x:Name="InitialLocationPicker"
+              ItemsSource="{Binding Locations}"
+              SelectedItem="{Binding InitialLocationByUser}"
+              
+              HorizontalOptions="Start" Title="Initial Location"
+              Margin="10">
+
+            </Picker>
+
+            <Picker x:Name="FinalLocationPicker"
+              ItemsSource="{Binding Locations}"
+              SelectedItem="{Binding FinalLocationByUser}"
+              
+              HorizontalOptions="Start" Title="Final Location"
+              Margin="10">
+
+            </Picker>
+
+            <Button Text="Save" Command="{Binding OnSave}"/>
+            <Label Text="{Binding ErrorMessage}" TextColor="Red"/>
+
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

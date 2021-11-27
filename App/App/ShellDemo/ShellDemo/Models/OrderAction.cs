@@ -6,27 +6,27 @@ using Newtonsoft.Json;
 
 namespace ShellDemo.Models
 {
-    public class OrderAction
+    public class OrderAction:IComparable<OrderAction>
     {
         [JsonIgnore]
         [PrimaryKey, AutoIncrement]
         
-        public int ID { get; set; }
+        public long ID { get; set; }
 
         [JsonProperty("id")]
-        public int IDAtDatabase { get; set; }
+        public long IDAtDatabase { get; set; }
 
         [JsonProperty("fromOrderID")]
-        public int FromOrderId { get; set; }
+        public long FromOrderId { get; set; }
 
         [JsonProperty("action")]
         public string Action { get; set;}
 
         [JsonProperty("quantity")]
-        public int Quantity { get; set; }
+        public long Quantity { get; set; }
 
         [JsonProperty("itemBarcode")]
-        public int ItemBarcode { get; set; }
+        public long ItemBarcode { get; set; }
 
         [JsonProperty("locationId")]
         public int LocationId { get; set; }
@@ -34,7 +34,41 @@ namespace ShellDemo.Models
         [JsonProperty("status")]
         public bool Completed { get; set; }
 
+        [Ignore]
+        [JsonIgnore]
+        public bool Initialpick { get; set; }  // This variable use for indication in picking process.
+                                               // When user start picking from location AA0, this app will first direct
+                                               // user to pick up items for each supply action later on
 
+        public int Compare(OrderAction x, OrderAction y)
+        {
+            if(x.LocationId < y.LocationId)
+            {
+                return -1;
+            }else if(x.LocationId == y.LocationId)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        public int CompareTo(OrderAction other)
+        {
+            if(this.LocationId < other.LocationId)
+            {
+                return -1;
+            }else if(this.LocationId == other.LocationId)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
 
         public string WorkingSection()
         {

@@ -3,6 +3,7 @@ public class MonoPackageManager_Resources {
 	public static String[] Assemblies = new String[]{
 		/* We need to ensure that "ShellDemo.Android.dll" comes first in this list. */
 		"ShellDemo.Android.dll",
+		"Behaviors.dll",
 		"FastAndroidCamera.dll",
 		"Flurl.dll",
 		"Flurl.Http.dll",

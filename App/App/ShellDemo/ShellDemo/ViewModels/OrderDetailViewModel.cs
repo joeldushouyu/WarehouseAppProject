@@ -10,7 +10,7 @@ namespace ShellDemo.ViewModels
     public class OrderDetailViewModel : BaseViewModel
     {
 
-        public string AssignedBarcode => ord.barCode.ToString();
+        public string AssignedBarcode => ord.BarCode.ToString();
         public string Message => ord.Message;
         public string BoxSize => ord.BoxSize;
         public DateTime OrderDate => ord.OrderDate;

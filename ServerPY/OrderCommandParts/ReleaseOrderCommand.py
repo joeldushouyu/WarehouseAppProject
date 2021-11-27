@@ -7,7 +7,7 @@ class ReleaseOrderCommand(Command):
 
 
 
-    def execute(self, data:dict):
+    def execute(self):
         #TODO: execute the command in user
         pass
 

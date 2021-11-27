@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ShellDemo.Models
 {
-    public enum ActionType
+    public enum ActionTypess
     {
             Pick = 1,
             Supply = 2
