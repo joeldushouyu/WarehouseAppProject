@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Flurl.Http;
+﻿using Flurl.Http;
 using ShellDemo.Models;
+using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
-using ZXing;
-
 namespace ShellDemo.ViewModels
 {
 
@@ -14,6 +11,8 @@ namespace ShellDemo.ViewModels
         private Order ord;
         public ZXing.Net.Mobile.Forms.ZXingScannerView scanner;
 
+        private bool needConfirmation = false;
+        private List<OrderAction> respond;
 
         private string _barCodeid;
 
@@ -91,6 +90,7 @@ namespace ShellDemo.ViewModels
         public long OrderID => this.ord.IDAtDatabase;
 
         public bool HaveBarcodeID => ord.BarCode != 0;
+        public bool CanChangeBarcodeID => !(HaveBarcodeID);
 
         public bool CanGetOrder => ErrorBarCodeMessage.Length == 0;
         public Command ScanCommand { get; }
@@ -105,77 +105,68 @@ namespace ShellDemo.ViewModels
 
         }
 
-        private bool ConfirmGetOrder(UserSession ans, Order ord)
+        private void ConfirmGetOrder()
         {
             try
-            {
+            {   /*
                 string url = MobileApp.GetSingletion().BaseUrl + "/confirm";
                 var respondCode = url.WithTimeout(20).PostJsonAsync(ans).Result;
+                */
+                Services.ServerRequest.ConfirmPickOrderRequest();
                 // means user successfully Get the order
-                return true;
+                needConfirmation = false;
             }
-            catch (FlurlHttpTimeoutException er)
+            catch (Exception e)
             {
-                throw er;
-
-            }
-            catch (FlurlHttpException e)
-            {
-                int statusCode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
-                if (statusCode == 404)
+                if (e.InnerException is FlurlHttpTimeoutException)
                 {
-                    // could be the user has already got the order, or for somereason it is lost on the server
-
-                    //check if the user already have the order
-                    try
+                    throw e; // tell user to retry in the onUpdate code's catch
+                }
+                else if (e.InnerException is FlurlHttpException)
+                {
+                    // most likely 404 code, means the server has already processsed it
+                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
+                    if (errorcode == 404)
                     {
-                        string url_isPicked = MobileApp.GetSingletion().BaseUrl + "/pickedUpOrder/" + ord.IDAtDatabase;
-                        var res = url_isPicked.PostJsonAsync(ans);
-
-                        // success, returns 200
-                        return true;
-
-                        //TODO: handle timeout exception
-
+                        needConfirmation = false; // the server has already process the request
                     }
-                    catch (FlurlHttpException es)
+                    else
                     {
-                        //here means just not login or the session is been clear out by server
-                        throw es;
+                        // could be 500 code
+                        throw e;
                     }
+
                 }
                 else
                 {
                     throw e;
                 }
+
             }
         }
         private async void PickOrder()
         {
             try
             {
-                string url_getOrder = MobileApp.GetSingletion().BaseUrl + "/pickOrder";
-                List<OrderAction> respond = await url_getOrder.WithTimeout(20).PostJsonAsync(new GetOrderRequest
-                {
-                    Session = MobileApp.GetSingletion().User.CurrentSessionUUID,
-                    OrderID = this.ord.IDAtDatabase,
-                    Barcode = Int32.Parse(this._barCodeid)
-                }).ReceiveJson<List<OrderAction>>();
 
 
-                foreach( OrderAction orda in respond)
+                if (needConfirmation == false)
                 {
-                    ord.OrderActions.Add(orda);
+                    respond = Services.ServerRequest.PickOrderRequest(this.ord, this._barCodeid);
+                    needConfirmation = true;
+
+                    foreach (OrderAction orda in respond)
+                    {
+                        ord.OrderActions.Add(orda);
+                    }
+
                 }
 
+
                 // got and send a confirm request
-                UserSession ses = new UserSession
-                {
-                    Session = MobileApp.GetSingletion().User.CurrentSessionUUID
-                };
 
 
-                ConfirmGetOrder(ses, ord);  
+                ConfirmGetOrder();
                 // after server successfully receive the request
                 MobileApp.GetSingletion().User.Orders.Add(ord);
 
@@ -190,28 +181,34 @@ namespace ShellDemo.ViewModels
                     Shell.Current.Navigation.RemovePage(Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 2]);
                 }
                 await Shell.Current.Navigation.PopAsync();
+
             }
-            catch(FlurlHttpTimeoutException e)
+            catch (Exception e)
             {
-                ErrorGetOrderMessage = "An network Error occurs, please retry";
-            }
-            catch(FlurlHttpException e)
-            {
-                int errorcode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
-                if (errorcode == 403)
+                if(e.InnerException is FlurlHttpTimeoutException)
                 {
-                    ErrorGetOrderMessage = "An error occurs with your account, please try to logout and re-login";
-                }else if(errorcode == 404)
+                    ErrorGetOrderMessage = "An network Error occurs, please retry";
+                }else if(e.InnerException is FlurlHttpException)
                 {
-                    ErrorGetOrderMessage = e.Message;
+                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
+                    if (errorcode == 403)
+                    {
+                        ErrorGetOrderMessage = "An error occurs with your account, please try to logout and re-login";
+                    }
+                    else if (errorcode == 404)
+                    {
+                        ErrorGetOrderMessage = e.Message;
+                    }
+                    else
+                    {
+                        ErrorGetOrderMessage = "Unknow network failure";
+                    }
                 }
                 else
                 {
-                    ErrorGetOrderMessage = "Unknow network failure";
+                    ErrorGetOrderMessage = "Hello world";
                 }
-            }catch(Exception e)
-            {
-                ErrorGetOrderMessage = "Hello world";
+                
             }
         }
 
@@ -220,7 +217,7 @@ namespace ShellDemo.ViewModels
             IsScanning = true;
 
             //ZXingScannerView_OnScan();
-            
+
         }
         public void ZXingScannerView_OnScan()
         {
@@ -242,7 +239,7 @@ namespace ShellDemo.ViewModels
             try
             {
                 int numb = Int32.Parse(newBarCode);
-                if(numb == 0)
+                if (numb == 0)
                 {
                     throw new Exception("");
                 }

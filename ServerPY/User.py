@@ -1,7 +1,7 @@
 
 from Enumerables.AccountType import AccountType
 
-from Database import db
+from Database import db,orm
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,11 +9,14 @@ class User(db.Model):
     accountType = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     #workingSection = "AA-AA"  # default
-    pickedUpOrders = []
-    sessionId = ""
+    #pickedUpOrders = []
+    #sessionId = ""
+
+    @orm.reconstructor
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-
+        self.pickedUpOrders= []
+        self.sessionId = ""
         #self.currentActiveSession = None
 
     """

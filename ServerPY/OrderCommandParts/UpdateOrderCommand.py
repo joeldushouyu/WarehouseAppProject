@@ -6,9 +6,10 @@ from Database import db,loginedUsers
 from threading import  Lock
 lock = Lock()
 class UpdateOrderCommand(Command):
-    def __init__(self, currentUser, currentOrder,orderAction_dict_list):
+    def __init__(self, currentUser, currentOrder,orderAction_dict_list:dict, errorOrderIDList:list):
         super().__init__(currentUser, currentOrder)
         self.data = orderAction_dict_list
+        self.errorOrderIDList = errorOrderIDList
 
 
 
@@ -17,10 +18,23 @@ class UpdateOrderCommand(Command):
         #TODO: execute the command in user
         # remove those orders from user's pickedUpOrders
         # change the identity from lock to unlock
+        # try to find all order in the errorOrder, errorOccurred = true for each
         self.interpretData()
         for order in self.currentUser.pickedUpOrders:
             order.locked = False
             db.session.add(order)
+
+        # handle all error Orders.
+        for orderID in self.errorOrderIDList:
+            # try to search for the order
+            result = self.find_order(orderID)
+            if result == None:
+                # means this order did not even exit before
+                pass
+            else:
+                result.errorOccurred = True
+                db.session.add(result)
+
         self.currentUser.pickedUpOrders = []
         db.session.commit()
 
@@ -32,7 +46,10 @@ class UpdateOrderCommand(Command):
             for orderAction_dict in self.data:
                 tempOrderAct = self.find_orderAction(orderAction_dict["id"]) # does not need to do a validation check
                                                                         #    check should have done previously in
-                if tempOrderAct.status == False and bool( orderAction_dict["status"] ) == True:
+                if tempOrderAct.id in self.errorOrderIDList:
+                    continue # means it is one of the order with error
+                elif tempOrderAct.status == False and bool( orderAction_dict["status"] ) == True:
+                    # this allows that if user pass in the same order again, if written true in database, it will simply ignore
                     tempOrderAct.status = True
                     # calculate delta change on item table
 

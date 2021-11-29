@@ -27,7 +27,7 @@
 
             </Picker>
 
-            <Button Text="Save" Command="{Binding OnSave}"/>
+            <Button Text="save" Command="{Binding OnSave}"/>
             <Label Text="{Binding ErrorMessage}" TextColor="Red"/>
 
 

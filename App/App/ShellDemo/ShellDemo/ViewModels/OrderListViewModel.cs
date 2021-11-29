@@ -103,6 +103,7 @@ namespace ShellDemo.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                _errorMessage = "Unknow error has occurred, please retry";
             }
             finally
             {

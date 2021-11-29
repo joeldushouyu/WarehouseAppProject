@@ -16,8 +16,9 @@ class Item(db.Model):
     weight = db.Column(db.Float, nullable=True)
     locationID = db.Column(db.Integer, nullable=False)
 
-    def to_dict_simplify(self):
-        return {"id":self.id, "itemBarcode":self.itemBarcode,  "quantity":self.quantity, "LocationID": self.locationID}
+    def to_dict(self):
+        return {"id":self.id, "itemBarcode":self.itemBarcode, "image":self.image, "quantity":self.quantity,
+                "LocationID": self.locationID, "notificationDate":self.notificationDate, "notificationType":self.notificationType}
     #https://stackoverflow.com/questions/33101935/convert-pil-image-to-byte-array
     def convert_picture_to_byte_array(self):
         imgByteArr = io.BytesIO()
@@ -27,7 +28,7 @@ class Item(db.Model):
         return imgByteArr
 
 
-
+""""
 image = Image.open(os.path.join(os.getcwd(),"pictures","stationary", "MemberMarkHandSantilizer.png"))
 
 image.thumbnail((500,500), Image.ANTIALIAS)
@@ -39,3 +40,4 @@ def convert_picture_to_byte_array():
     imgByteArr = imgByteArr.getvalue()
     return imgByteArr
 
+"""

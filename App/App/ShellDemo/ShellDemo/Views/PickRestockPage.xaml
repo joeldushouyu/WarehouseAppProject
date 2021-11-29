@@ -16,31 +16,31 @@
 
             <StackLayout Orientation="Horizontal" >
                 <Label Text="Action:" />    
-                <Label Text="{Binding Action}" VerticalOptions="CenterAndExpand"/>
+                <Label Text="{Binding Action}" TextColor="{Binding WarningTextColor}" VerticalOptions="CenterAndExpand"/>
                 
 
             </StackLayout>
             <StackLayout Orientation="Horizontal" >
                 <Label Text="order barcode:"/>
-                <Label Text="{Binding OrderBarcodeID}" VerticalOptions="CenterAndExpand"/>
+                <Label Text="{Binding OrderBarcodeID}" TextColor="{Binding WarningTextColor}" VerticalOptions="CenterAndExpand"/>
 
             </StackLayout>
 
 
             <StackLayout Orientation="Horizontal" >
                 <Label Text="Quantity" />
-                <Label Text="{Binding Quantity}" VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding Quantity}" TextColor="{Binding WarningTextColor}" VerticalOptions="CenterAndExpand" />
 
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <Label Text="Item barcode"/>
-                <Label Text="{Binding ItemBarcode}" HorizontalOptions="Fill"/>
+                <Label Text="{Binding ItemBarcode}" TextColor="{Binding WarningTextColor}" HorizontalOptions="Fill"/>
 
             </StackLayout>
 
             <StackLayout Orientation="Horizontal">
                 <Label Text="Location"/>
-                <Label Text="{Binding Location}" HorizontalOptions="Fill"/>
+                <Label Text="{Binding Location}"  TextColor="{Binding WarningTextColor}" HorizontalOptions="Fill"/>
 
             </StackLayout>
 

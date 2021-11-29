@@ -11,7 +11,17 @@ namespace ShellDemo.ViewModels
     {
         public List<string> Locations { get; set; }
 
+
+        public bool NeedUpdate
+        {
+            get
+            {
+                return MobileApp.GetSingletion().User.Orders.Count != 0;
+            }
+        }
         public Command OnSave { get; }
+
+
 
         private string _errorMessage;
         public string ErrorMessage
@@ -63,12 +73,27 @@ namespace ShellDemo.ViewModels
             }
         }
 
+
+
+
+
+
+        // direct copy code from UpdateOrderViewModel
+
+
         public void canSave()
-        {
+        {   
+
             int beginIndex = this.Locations.BinarySearch(InitialLocationByUser);
             int endIndex = this.Locations.BinarySearch(FinalLocationByUser);
 
-            if (beginIndex > endIndex)
+            if(MobileApp.GetSingletion().User.Orders.Count != 0)
+            {
+                // means there are still orders, tell user that they have to update with server 
+                ErrorMessage = "You have to update all your orders before continue";
+
+            }
+            else if (beginIndex > endIndex)
             {
                 ErrorMessage = "Invalid choice";
             }else if (MobileApp.GetSingletion().User.CurrentSessionUUID == null)
@@ -79,6 +104,9 @@ namespace ShellDemo.ViewModels
             {
                 string newSection = InitialLocationByUser + "-" + FinalLocationByUser;
                 MobileApp.GetSingletion().User.WorkingSection = newSection;
+               
+                // try to update the order, because the current orders picked by user might no be in this area
+                
                 Shell.Current.GoToAsync($"//{nameof(MainPage)}");
 
             }

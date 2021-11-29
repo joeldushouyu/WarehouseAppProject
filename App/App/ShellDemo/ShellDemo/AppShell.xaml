@@ -36,20 +36,14 @@
             <ShellContent Title="Abot" Icon="icon_about.png" Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Orders" Icon="tab_about.png">
-            <ShellContent Title="Browse" Icon="icon_feed.png"   ContentTemplate="{DataTemplate local:OrderListPage}" />
+            <ShellContent Title="Browse" Icon="icon_feed.png" Route="OrderListPage"  ContentTemplate="{DataTemplate local:OrderListPage}" />
         </Tab>
         <Tab Title="Picking" Icon="tab_about.png">
-            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:OrderGettedListPage}" />
+            <ShellContent Title="Browse" Icon="icon_feed.png" Route="OrderGettedListPage" ContentTemplate="{DataTemplate local:OrderGettedListPage}" />
         </Tab>
     </FlyoutItem>
 
-    <FlyoutItem Title="on flyout 2" Icon="tab_about.png">
 
-        <Tab Title="Aut" Icon="tab_about.png">
-            <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:OrderListPage}" />
-        </Tab>
-
-    </FlyoutItem>
     
     <!--appear when flyout is visiable-->
     <MenuItem Text="Logout" Clicked="OnMenuItemClicked"/>

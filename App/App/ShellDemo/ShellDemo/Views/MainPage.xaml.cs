@@ -20,7 +20,7 @@ namespace ShellDemo.Views
 
         protected override async void OnAppearing()
         {   MobileApp app = MobileApp.GetSingletion();
-            if(app.User.CurrentSessionUUID == null)
+            if(MobileApp.GetSingletion().User.IsLogout())
             {
                 // means not logined
                 nextActionBtn.Text = "Login";

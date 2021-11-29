@@ -23,6 +23,8 @@ namespace ShellDemo
 
         protected override void OnSleep()
         {
+            //Here try to update the server will what it have in the order, since it might got kill within any time.
+            // ignore all exceptions? good practice?
         }
 
         protected override void OnResume()

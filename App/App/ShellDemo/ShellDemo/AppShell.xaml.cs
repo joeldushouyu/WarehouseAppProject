@@ -14,7 +14,8 @@ namespace ShellDemo
             InitializeComponent();
             //Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
             //Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
-            Routing.RegisterRoute(nameof(OrderListPage), typeof(OrderListPage));
+            //Routing.RegisterRoute(nameof(OrderListPage), typeof(OrderListPage));
+            //Routing.RegisterRoute(nameof(OrderGettedListPage), typeof(OrderGettedListPage));
 
 
             //initalize singletion

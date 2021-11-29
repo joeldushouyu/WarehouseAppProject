@@ -39,5 +39,11 @@ namespace ShellDemo.Views
                 ord.UserAction = picker.Items[selectedIndex];
             }
         }
+
+        protected override void OnDisappearing()
+        {
+            ZxingScan = null;
+            base.OnDisappearing();
+        }
     }
 }

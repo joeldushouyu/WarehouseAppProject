@@ -20,6 +20,8 @@ namespace ShellDemo.ViewModels
        
         public Command<Order> OrderTapped { get; }
         public Command PickOrderCommand { get; }
+
+        public Command UpdateOrderCommand { get; }
        
 
 
@@ -32,7 +34,13 @@ namespace ShellDemo.ViewModels
 
             OrderTapped = new Command<Order>(OnOrderSelected);
             PickOrderCommand = new Command(() => StartPicking());
+            UpdateOrderCommand = new Command(UpdateCurrentOrders);
        
+        }
+        public void UpdateCurrentOrders()
+        {
+            var page = new UpdateOrderPage(new UpdaterOrderViewModel());
+            _ = Shell.Current.Navigation.PushAsync(page);
         }
         public  void StartPicking()
         {

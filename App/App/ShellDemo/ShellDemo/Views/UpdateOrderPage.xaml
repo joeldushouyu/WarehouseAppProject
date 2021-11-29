@@ -9,6 +9,10 @@
 
             <Button Text="Update with Server" Command="{Binding UpdateCommand}"/>
             <Label Text="{Binding ErrorMessage}" TextColor="Red" />
+            <Label Text="{Binding ErrorOrderInformation}"/>
+            <Button Text="Finish" Command="{Binding Finish}" IsEnabled="{Binding IsFinishUpdate}" />
+
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

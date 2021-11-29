@@ -12,7 +12,7 @@
             <Label Text="Order Binding Barcode"/>
             <Entry Text="{Binding BarCodeID}" IsReadOnly="{Binding HaveBarcodeID}"/>
 
-            <Button Text="Scan" Command="{Binding ScanCommand}"/>
+            <Button Text="Scan" Command="{Binding ScanCommand}" IsEnabled="{Binding CanChangeBarcodeID}" />
 
             <zxing:ZXingScannerView x:Name="ZxingScan"  IsScanning="True"  OnScanResult="ZXingScannerView_OnScanResult"  
                                     IsVisible="{Binding IsScanning}" />

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Flurl.Http;
 using ShellDemo.Models;
+using ShellDemo.Views;
 using Xamarin.Forms;
+using ShellDemo.Services;
 
 namespace ShellDemo.ViewModels
 {
@@ -11,15 +14,22 @@ namespace ShellDemo.ViewModels
     {
 
         public Command UpdateCommand { get; }
+        public Command Finish { get; }
 
-        public bool _isUpdating;
-        public bool IsUpdating
+        private bool needConfirmation = false;
+        private UpdateOrderResponse respond;
+
+       
+
+        public string ErrorOrderInformation { get; set; }
+        public bool _isFinishUpdate;
+        public bool IsFinishUpdate
         {
-            get => _isUpdating;
+            get => _isFinishUpdate;
             set
             {
-                SetProperty(ref _isUpdating, value);
-                OnPropertyChanged(nameof(IsUpdating));
+                SetProperty(ref _isFinishUpdate, value);
+                OnPropertyChanged(nameof(IsFinishUpdate));
             }
         }
 
@@ -37,44 +47,58 @@ namespace ShellDemo.ViewModels
         public UpdaterOrderViewModel()
         {
             UpdateCommand = new Command(OnUpdate);
+            Finish = new Command(FinishCommand);
         }
+        
 
-        private void ResetRequest()
+        private async void FinishCommand()
         {
-
+            //https://stackoverflow.com/questions/24856116/how-to-popasync-more-than-1-page-in-xamarin-forms-navigation
+            // Modify
+            for (var counter = 1; ; counter++)
+            {
+                var removingPage = Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 2];
+                if(removingPage is OrderGettedListPage || removingPage ==null)
+                {
+                    break; // stop removing anymore
+                }
+                else
+                {
+                    Shell.Current.Navigation.RemovePage(removingPage);
+                }
+                
+            }
+            await Shell.Current.Navigation.PopAsync();
         }
 
-        private bool ConfirmUpdateOrder(UserSession userSess)
+        private void ConfirmUpdateOrder()
         {
             try
             {
-                string url = MobileApp.GetSingletion().BaseUrl + "/confirm";
-                var respondCode = url.WithTimeout(20).PostJsonAsync(userSess).Result;
+
+                var resoind = Services.ServerRequest.ConfirmUpdateRequest();
                 // means the server has successfully got the message from us.
-                return true;
+                needConfirmation = false;
+         
             }
-            catch (FlurlHttpTimeoutException e)
+            catch(Exception e)
             {
-                throw e;
-
-            }
-            catch (FlurlHttpException e)
-            {
-
-                int statusCode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
-                if (statusCode == 404)
+                if(e.InnerException is FlurlHttpTimeoutException)
                 {
-
-                    try
+                    throw e; // tell user to retry in the onUpdate code's catch
+                }else if(e.InnerException is FlurlHttpException)
+                {
+                    // most likely 404 code, means the server has already processsed it
+                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
+                    if(errorcode == 404)
                     {
-                        // it could be that the server could have already execute the command
-                        string url = MobileApp.GetSingletion().BaseUrl + "/readyToLogout";
-                        var respond = url.PostJsonAsync(userSess).Result;
-                        // if still here, means no exception occur and got 200 code
+                        // the server has already process the request
+                        needConfirmation = false;
                     }
-                    catch (FlurlHttpException es)
+                    else
                     {
-                        throw es;
+                        // could be 500 code
+                        throw e;
                     }
 
                 }
@@ -82,51 +106,100 @@ namespace ShellDemo.ViewModels
                 {
                     throw e;
                 }
+                
             }
-            return false;
+
         }
 
         public void OnUpdate()
         {
+            IsFinishUpdate= false;
             try
             {
-                string updateUrl = MobileApp.GetSingletion().BaseUrl + "/updateOrder";
-                var respond = updateUrl.WithTimeout(20).PostJsonAsync(new UpdateOrderRequest
+                
+                if(needConfirmation == false)
                 {
-                    Session = MobileApp.GetSingletion().User.CurrentSessionUUID,
-                    Orders = MobileApp.GetSingletion().User.Orders
-                }).Result;
+                    // means did not send any request to the server yet
+                    respond = ServerRequest.UpdateRequest();
+                    needConfirmation = true;
+                }
+                else
+                {
+                    ; //pass, go straight to confirm request as describe below.
+                }
+
                 Console.WriteLine("success");
 
-                ConfirmUpdateOrder(new UserSession
-                {
-                    Session = MobileApp.GetSingletion().User.CurrentSessionUUID
+                ConfirmUpdateOrder();
 
-                });
-
-                MobileApp.GetSingletion().User.Orders.Clear();
-                // return true;
-            }
-            catch (FlurlHttpTimeoutException e)
-            {
-                ErrorMessage ="An network error occurs, please retry";
-            }
-            catch (FlurlHttpException e)
-            {
-                int errorcode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
-                if(errorcode == 404)
+                // check to see if there are orders containing error
+                UpdateOrderResponse errorOrders = respond;
+                if(errorOrders.ErrorOrderID.Count == 0)
                 {
-                    // means something wrong with the data
-                    // for some reason, the data does not consist with the server's status
-                    // call reset API with the server.
+                    // means no error order occurs during the update
                 }
-                // return false;
+                else
+                {
+                    // means error order occurs
+                    foreach(long orderID in errorOrders.ErrorOrderID)
+                    {
+                        ErrorOrderInformation = "Error Order Information";
+                        Order ord = null;
+                        foreach(Order ordertemp in MobileApp.GetSingletion().User.Orders)
+                        {
+                            if(ordertemp.IDAtDatabase == orderID)
+                            {
+                                ord = ordertemp;
+                                break;
+                            }
+                            ErrorOrderInformation += String.Format("OrderID:{0}   OrderBarCode:{1}", ord.IDAtDatabase, ord.BarCode);
 
+
+                        }
+                    }
+                }
+                MobileApp.GetSingletion().User.Orders.Clear();
+                ErrorMessage = "";
+                IsFinishUpdate = true;
+
+                // return true;
             }
             catch (Exception e)
             {
-                // return false;
+                if(e.InnerException is FlurlHttpTimeoutException)
+                {
+                    ErrorMessage = "An network error occurs, please retry";
+                }else if(e.InnerException is FlurlHttpException)
+                {
+                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
+                    if (errorcode == 404)
+                    {
+
+                        // means incorrect format
+                        //should not happen,
+                        //but if does, report 
+                        ErrorMessage = "An undesire error happens, please retry";
+                    }
+                    else if (errorcode == 403)
+                    {
+                        // incorrect user UUID, 
+                        //Nothing can do except let the user re-login
+                        ErrorMessage = "Please try relogin with your account";
+                    }
+                    else
+                    {
+                        // mayeb 500
+                        ErrorMessage = "An undesire error happens, please retry";
+                    }
+                }
+                else
+                {
+                    ErrorMessage = "An undesire error happens, please retry";
+                }
+                
             }
+
+           
         }
     }
 }

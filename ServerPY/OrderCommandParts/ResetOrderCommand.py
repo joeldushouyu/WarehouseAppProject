@@ -1,4 +1,4 @@
-from Command import  Command
+from OrderCommandParts.Command import  Command
 
 class ResetOrderCommand(Command):
     def __init__(self, currentUser, currentOrder):

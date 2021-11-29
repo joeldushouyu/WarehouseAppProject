@@ -18,7 +18,7 @@
             <Label Text="Password"/>
             <Entry Text="{Binding Password}"/>
             
-            <Button VerticalOptions="Center" IsEnabled="{Binding CanLogin}" Text="Login" Command="{Binding LoginCommand} "/>
+            <Button VerticalOptions="Center" IsEnabled="{Binding CanLogin}" Text="{Binding ShowButtonText}" Command="{Binding LoginCommand} "/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

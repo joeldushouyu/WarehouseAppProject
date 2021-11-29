@@ -106,6 +106,19 @@ namespace ShellDemo.Models
         }
 
 
+        public void logoutUser()
+        {
+            //reset data
+            this.CurrentSessionUUID = "";
+            this.AccountName = "";
+            this.WorkingSection = "AA-AA";
+            this.Password = "";
+            this.Orders = new List<Order>();
+        }
+        public bool IsLogout()
+        {
+            return this.CurrentSessionUUID == "";
+        }
         public void SortOrderActions()
         {
             _sortedOrderActions.Clear();
@@ -212,11 +225,12 @@ namespace ShellDemo.Models
         }*/
         public User()
         {
-            _currentSessionUUID = null; // inidication that is not logined
+            _currentSessionUUID = ""; // inidication that is not logined
             // default working section
             _workingSection = "AA-AA";
             _orders = new List<Order>();
             _sortedOrderActions = new List<OrderAction>();
+           
         }
 
       

@@ -35,6 +35,23 @@ namespace ShellDemo.ViewModels
             get => CurrentOrder.BarCode.ToString();
         }
 
+        public string WarningTextColor
+        {
+            get
+            {
+                if(this.CurrentOrder.ErrorOccurred == true)
+                {
+                    // change text to red
+                    return "Red";
+
+                }
+                else
+                {
+                    return "Black";
+                }
+            }
+        }
+
         public string ItemBarcode
         {
             get => CurrentOrderAction.ItemBarcode.ToString();
