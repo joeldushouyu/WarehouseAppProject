@@ -9,9 +9,10 @@ namespace ShellDemo.Models
     public class OrderAction:IComparable<OrderAction>
     {
         [JsonIgnore]
+    
         [PrimaryKey, AutoIncrement]
-        
         public long ID { get; set; }
+
 
         [JsonProperty("id")]
         public long IDAtDatabase { get; set; }

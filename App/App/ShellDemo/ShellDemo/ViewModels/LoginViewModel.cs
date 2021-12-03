@@ -98,55 +98,33 @@ namespace ShellDemo.ViewModels
             Username = "";
             Password = "";
         }
-        private void ConfirmLogin(UserSession ans)
+        private async void ConfirmLogin(UserSession ans)
         {
             try
             {
-                Services.ServerRequest.ConfirmLoginRequest(ans);
+                await Services.ServerRequest.ConfirmLoginRequest(ans);
                 // means user successfully logined user
                 needConfirmation = false;
             }
             catch (Exception e)
             {
-                if (e.InnerException is FlurlHttpTimeoutException)
-                {
-                    throw e; // tell user to retry
-                }
-                else if (e.InnerException is FlurlHttpException)
-                {
-                    // most likely 404 code, means the server has already processsed it
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
-                    if (errorcode == 404)
-                    {
-                        needConfirmation = false; // the server has already process the request
-                    }
-                    else
-                    {
-                        // could be 500 code
-                        throw e;
-                    }
-
-                }
-                else
-                {
-                    throw e;
-                }
+                throw e;
 
             }
 
 
         }
 
-        public void Logout()
+        public async void Logout()
         {
             try
             {
-                Services.ServerRequest.LogoutRequest();
+                await Services.ServerRequest.LogoutRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
                 MobileApp.GetSingletion().User.logoutUser();    
 
             }catch(Exception e)
             {
-                ErrorMessage = "Fail to logout, please retry by click login button";
+                ErrorMessage = e.Message;
             }
 
 
@@ -157,7 +135,7 @@ namespace ShellDemo.ViewModels
             CanLogin = false;
 
 
-            try { 
+           try { 
                 
                 if(MobileApp.GetSingletion().User.IsLogout() == false)
                 {
@@ -168,7 +146,7 @@ namespace ShellDemo.ViewModels
 
                 if(needConfirmation == false)
                 {
-                    respond = Services.ServerRequest.LoginRequest(this.Username, this.Password);
+                    respond = await Services.ServerRequest.LoginRequest(this.Username, this.Password);
                     needConfirmation = true;
                 }
 
@@ -184,42 +162,12 @@ namespace ShellDemo.ViewModels
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
 
             }
-            catch (FlurlHttpTimeoutException)
-            {
 
-            }
            
             catch(Exception e)
             {
- 
-                if(e.InnerException is FlurlHttpTimeoutException)
-                {
-                    ErrorMessage = "An network Error occurs, please retry";
-                }else if(e.InnerException is FlurlHttpException )
-                {
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
-                    if (errorcode == 403)
-                    {
-                        // means first time login, but got 403, account alredy login in on other device
-                        ErrorMessage = "Incorrect username or password";
-                    }
-                    else if (errorcode == 405)
-                    {
-                        // it has been timeout, 
-                        ErrorMessage = "You account is logined in on another device already!";
-                        //TODO: what if connection lost on the way back?
-                    }
-                    else
-                    {
-                        // server error
-                        ErrorMessage = "An error occurs with the server, please retry";
-                    }
-                }
-                else
-                {
-                    ErrorMessage = "An error occurs , please retry";
-                }
-                
+
+                ErrorMessage = e.Message;
             }
             CanLogin = true;
 

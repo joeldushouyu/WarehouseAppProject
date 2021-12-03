@@ -5,6 +5,7 @@ namespace ShellDemo.Models
 {
     public class Item
     {   
+
         [JsonProperty("id")]
         public string Id { get; set; }
 
@@ -17,7 +18,7 @@ namespace ShellDemo.Models
         [JsonProperty("quantity")]
         public long Quantity { get; set; }
 
-        [JsonProperty("LocationID")]
+        [JsonProperty("locationID")]
         public long LocationID { get; set; }
 
         [JsonProperty("notificationDate")]
@@ -25,5 +26,30 @@ namespace ShellDemo.Models
 
         [JsonProperty("notificationType")]
         public string NotificationType { get; set; }
+
+        [JsonProperty("weight")]
+        public double Weight { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonIgnore]
+        public string SectionAndLocation { get; set; }
+
+        
+        public void UpdateInformation(Item item)
+        {
+            this.Id = item.Id;
+            this.ItemBarcode = item.ItemBarcode;
+            this.Image = item.Image;
+            this.Quantity = item.Quantity;
+            this.LocationID = item.LocationID;
+            this.NotificationDate = item.NotificationDate;
+            this.NotificationType = item.NotificationType;
+            this.Name = item.Name;
+            this.Weight = item.Weight;
+        }
+
     }
+
 }

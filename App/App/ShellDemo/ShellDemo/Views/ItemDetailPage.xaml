@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShellDemo.Views.ItemDetailPage"
+             xmlns:local="clr-namespace:ShellDemo.ViewModels"
+             
+             x:DataType="local:ItemDetailViewModel"
+             Title="Item detail">
+
+
+    <StackLayout Spacing="10" Padding="15">
+
+
+        <Label Text="{Binding ErrorMessage}" TextColor="Red" FontSize="Large"/>
+
+        <Label Text="ItemBarCode:" FontSize="Medium" />
+        <Label Text="{Binding ItemBarCode}" FontSize="Small"/>
+        
+        <Label Text="Name:" FontSize="Medium" />
+        <Label Text="{Binding Name  }" FontSize="Small"/>
+        
+        <Label Text="Notification Type" FontSize="Medium" />
+        <Label Text="{Binding NotificationType  }" FontSize="Small"/>
+
+        <Label Text="Notification Date:" FontSize="Medium" />
+        <Label Text="{Binding  NotificationDate}" FontSize="Small"/>
+
+        <Label Text="Weight:" FontSize="Medium" />
+        <Label Text="{Binding Weight  }" FontSize="Small"/>
+
+        <Label Text="Quantity:" FontSize="Medium" />
+        <Label Text="{Binding Quantity }" FontSize="Small"/>
+        
+        
+
+
+    </StackLayout>
+    
+</ContentPage>

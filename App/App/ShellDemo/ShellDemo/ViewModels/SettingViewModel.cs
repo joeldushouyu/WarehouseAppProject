@@ -82,7 +82,8 @@ namespace ShellDemo.ViewModels
 
 
         public void canSave()
-        {   
+        {
+            ErrorMessage = "";
 
             int beginIndex = this.Locations.BinarySearch(InitialLocationByUser);
             int endIndex = this.Locations.BinarySearch(FinalLocationByUser);

@@ -43,3 +43,5 @@ G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDem
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\PickRestockPage.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\SettingPage.xaml.g.cs
 G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\UpdateOrderPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\ItemDetailPage.xaml.g.cs
+G:\college life\2.1\cps320\WarehouseProject\WarehouseAppProject\App\App\ShellDemo\ShellDemo\obj\Debug\netstandard2.0\Views\ItemListPage.xaml.g.cs

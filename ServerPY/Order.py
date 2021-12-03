@@ -29,7 +29,8 @@ class Order(db.Model):
         ordActs = OrderAction.query.filter_by(fromOrderID=self.id).all()
         ordActs = sorted(ordActs, key=self.sortOrderActionsPredicate)  #ensure that returns a sorted list of orderactions
         for ord in ordActs:
-            self.orderActions.append(ord)
+            if(ord.status == False):  # only give orderActions that is not complete yet
+                self.orderActions.append(ord)
 
     def sortOrderActionsPredicate(self, ord):
         number = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",

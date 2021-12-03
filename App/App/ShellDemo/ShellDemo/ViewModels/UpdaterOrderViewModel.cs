@@ -76,42 +76,20 @@ namespace ShellDemo.ViewModels
             try
             {
 
-                var resoind = Services.ServerRequest.ConfirmUpdateRequest();
+                var resoind = Services.ServerRequest.ConfirmUpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
                 // means the server has successfully got the message from us.
                 needConfirmation = false;
          
             }
             catch(Exception e)
             {
-                if(e.InnerException is FlurlHttpTimeoutException)
-                {
-                    throw e; // tell user to retry in the onUpdate code's catch
-                }else if(e.InnerException is FlurlHttpException)
-                {
-                    // most likely 404 code, means the server has already processsed it
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
-                    if(errorcode == 404)
-                    {
-                        // the server has already process the request
-                        needConfirmation = false;
-                    }
-                    else
-                    {
-                        // could be 500 code
-                        throw e;
-                    }
-
-                }
-                else
-                {
-                    throw e;
-                }
+                throw e; // let the Onupdate() handle the exception
                 
             }
 
         }
 
-        public void OnUpdate()
+        public async void OnUpdate()
         {
             IsFinishUpdate= false;
             try
@@ -120,7 +98,7 @@ namespace ShellDemo.ViewModels
                 if(needConfirmation == false)
                 {
                     // means did not send any request to the server yet
-                    respond = ServerRequest.UpdateRequest();
+                    respond = await ServerRequest.UpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID, MobileApp.GetSingletion().User.Orders);
                     needConfirmation = true;
                 }
                 else
@@ -131,6 +109,9 @@ namespace ShellDemo.ViewModels
                 Console.WriteLine("success");
 
                 ConfirmUpdateOrder();
+
+                // clear out the database
+
 
                 // check to see if there are orders containing error
                 UpdateOrderResponse errorOrders = respond;
@@ -159,6 +140,9 @@ namespace ShellDemo.ViewModels
                     }
                 }
                 MobileApp.GetSingletion().User.Orders.Clear();
+                // also clear out the database
+                _= await MobileApp.GetSingletion().LocalDatabase.ClearOrderActionAsync();
+                _= await MobileApp.GetSingletion().LocalDatabase.ClearOrderAsync();
                 ErrorMessage = "";
                 IsFinishUpdate = true;
 
@@ -166,37 +150,7 @@ namespace ShellDemo.ViewModels
             }
             catch (Exception e)
             {
-                if(e.InnerException is FlurlHttpTimeoutException)
-                {
-                    ErrorMessage = "An network error occurs, please retry";
-                }else if(e.InnerException is FlurlHttpException)
-                {
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
-                    if (errorcode == 404)
-                    {
-
-                        // means incorrect format
-                        //should not happen,
-                        //but if does, report 
-                        ErrorMessage = "An undesire error happens, please retry";
-                    }
-                    else if (errorcode == 403)
-                    {
-                        // incorrect user UUID, 
-                        //Nothing can do except let the user re-login
-                        ErrorMessage = "Please try relogin with your account";
-                    }
-                    else
-                    {
-                        // mayeb 500
-                        ErrorMessage = "An undesire error happens, please retry";
-                    }
-                }
-                else
-                {
-                    ErrorMessage = "An undesire error happens, please retry";
-                }
-                
+                ErrorMessage = e.Message;
             }
 
            

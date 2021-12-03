@@ -222,6 +222,9 @@ def user_ready_to_logout():
             abort(404, description="User is not ready to logout yet")
         else:
             abort(404, description="incorrect format or invalid message")
+
+
+
 @app.route("/orderList",methods=['POST'])
 def order():
     userInfo_dict = request.get_json()
@@ -416,7 +419,7 @@ def update_order():
                                     break
                                 else:
                                     #TODO: Also verify each item id?
-                                    tempOrderAction_dict_list.append(tempOrderAction_dict[0])
+                                    tempOrderAction_dict_list.append(orderActDict)
                 updateSession = Session(userUUID, UpdateOrderCommand(user, None, tempOrderAction_dict_list, errorOrderIDList), date.today(), user)
                 activeSessionList.append(updateSession)
                 return {"ErrorOrderID":errorOrderIDList}
@@ -438,7 +441,7 @@ def item_detail(location_id:int):
 
     try:
         userUuid = userInfo_dict["session"]
-        orderID = int(location_id)
+
     except Exception:
         abort(404,description="incorrect format")
 
@@ -455,12 +458,16 @@ def item_detail(location_id:int):
                 if(loc == None):
                     abort(404)
                 else:
-                    item = Item.query.filter_by(itemBarcode =loc.itemBarcode)
-                    if item == None:
-                        abort(500)
+                    if loc.itemBarcode == None:
+                        # means this place still does not have a item yet
+                        flask.Response(200)
                     else:
+                        item = Item.query.filter_by(itemBarcode=loc.itemBarcode).first()
+                        if item == None:
+                            abort(500)
+                        else:
 
-                        return {"ItemDetail":item.to_dict()}
+                            return item.to_dict()
 
 
     except Exception as e:
@@ -469,10 +476,38 @@ def item_detail(location_id:int):
         abort(404, description="Incorrect format information")
 
 
-@app.route("/notificationList",methods=['POST'])
-def notification_list():
-    datetime.strptime("2021 10 01","%Y %m %d")
-    datetime.datetime(2021, 10, 1, 0, 0)
+@app.route("/itemList", methods=['POST'])
+def item_list():
+    userInfo_dict = request.get_json()
+
+    try:
+        userUuid = userInfo_dict["session"]
+
+    except Exception:
+        abort(404, description="incorrect format")
+
+    try:
+
+        # check to see if user has logined
+        with lock:
+            user = find_login_user(userUuid)
+            if user == None:
+                abort(403)
+            else:
+
+                itemList = Item.query.all()
+
+                return flask.jsonify([ item.to_dict_simplify() for item in itemList])
+
+
+
+
+    except Exception as e:
+        if (e.code == 403):
+            abort(403, description="incorrect uuid")
+
+        abort(404, description="Incorrect format information")
+
 
 
 @app.route("/logout",methods=['POST'])

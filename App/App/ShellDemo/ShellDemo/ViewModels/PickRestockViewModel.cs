@@ -77,7 +77,7 @@ namespace ShellDemo.ViewModels
 
         private Order CurrentOrder;
         private OrderAction CurrentOrderAction;
-        public ZXing.Net.Mobile.Forms.ZXingScannerView scanner;
+
         private string _userAction;
         public string UserAction
         {
@@ -158,8 +158,8 @@ namespace ShellDemo.ViewModels
                 // barcode
                 try
                 {
-                    int numb = Int32.Parse(this.ItemBarcode);
-                    if (numb == 0 || numb != Int32.Parse(this.ItemBarcodeByUser))
+                    long numb = long.Parse(this.ItemBarcode);
+                    if (numb == 0 || numb != long.Parse(this.ItemBarcodeByUser))
                     {
                         throw new Exception("");
                     }
@@ -275,7 +275,7 @@ namespace ShellDemo.ViewModels
             return false;
         }
 
-        public void OnSave()
+        public async void OnSave()
         {
 
 
@@ -304,46 +304,19 @@ namespace ShellDemo.ViewModels
             }*/
 
             this.CurrentOrderAction.Completed = true;
+
+            // update the database
+            _ = await MobileApp.GetSingletion().LocalDatabase.UpdateOrderActionAsync(this.CurrentOrderAction);
+
+
             this.CurrentOrderAction.Initialpick = true;
+
+
             List<OrderAction> sortedActions = MobileApp.GetSingletion().User.SortedOrderActions;
             if(sortedActions.Count == 0)
             {
                 // means all done
-                /*
-                try
-                {
-                    string updateUrl = MobileApp.GetSingletion().BaseUrl + "/updateOrder";
-                    var respond =  updateUrl.WithTimeout(20).PostJsonAsync(new UpdateOrderRequest
-                    {
-                        Session = MobileApp.GetSingletion().User.CurrentSessionUUID,
-                        Orders = MobileApp.GetSingletion().User.Orders
-                    }).Result;
-                    Console.WriteLine("success");
 
-                    ConfirmUpdateOrder(new UserSession
-                                {
-                                    Session=MobileApp.GetSingletion().User.CurrentSessionUUID
-                                    
-                                });
-
-                    MobileApp.GetSingletion().User.Orders.Clear();
-                   // return true;
-
-                var page = new UpdateOrderPage(new UpdaterOrderViewModel());
-                }
-                catch (FlurlHttpTimeoutException e)
-                {
-                    //return false;
-                }
-                catch (FlurlHttpException e)
-                {
-                   // return false;
-
-                }
-                catch (Exception e)
-                {
-                   // return false;
-                }*/
                 var page = new UpdateOrderPage(new UpdaterOrderViewModel());
                 _ = Shell.Current.Navigation.PushAsync(page);
             }

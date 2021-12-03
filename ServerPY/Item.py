@@ -14,11 +14,18 @@ class Item(db.Model):
     notificationType = db.Column(db.String(100), nullable=True)
     notificationDate = db.Column(db.String(100), nullable=True)
     weight = db.Column(db.Float, nullable=True)
+    name = db.Column(db.String(100), nullable=True)
     locationID = db.Column(db.Integer, nullable=False)
 
     def to_dict(self):
-        return {"id":self.id, "itemBarcode":self.itemBarcode, "image":self.image, "quantity":self.quantity,
-                "LocationID": self.locationID, "notificationDate":self.notificationDate, "notificationType":self.notificationType}
+        return {"id":self.id, "itemBarcode":self.itemBarcode,  "quantity":self.quantity,
+                "LocationID": self.locationID, "notificationDate":self.notificationDate,
+                "notificationType":self.notificationType, "weight":self.weight, "name":self.name}
+
+    def to_dict_simplify(self):
+        return {"itemBarcode":self.itemBarcode, "name":self.name, "LocationID": self.locationID}
+
+
     #https://stackoverflow.com/questions/33101935/convert-pil-image-to-byte-array
     def convert_picture_to_byte_array(self):
         imgByteArr = io.BytesIO()

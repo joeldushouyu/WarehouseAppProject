@@ -19,7 +19,7 @@ namespace ShellDemo.Views
             InitializeComponent();
 
             BindingContext = pick;
-            pick.scanner = this.ZxingScan;
+ 
         }
 
         void ZXingScannerView_OnScanResult(ZXing.Result result)

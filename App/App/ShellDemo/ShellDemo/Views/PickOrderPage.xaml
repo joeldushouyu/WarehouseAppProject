@@ -20,7 +20,7 @@
             <Label Text="Error message"/>
             <Label Text="{Binding ErrorBarCodeMessage}" TextColor="Red"/>
             <Button Text="PickOrder" Command="{Binding PickOrderCommand}" IsEnabled="{Binding CanGetOrder }"/>
-            <Label Text="{Binding ErrorGetOrderMessage}"/>
+            <Label Text="{Binding ErrorGetOrderMessage}" TextColor="Red"/>
 
 
 

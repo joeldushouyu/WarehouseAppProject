@@ -73,6 +73,9 @@ namespace ShellDemo.Models
 
             return beginngRange <= locationID && endingRange >= locationID;
         }
+
+
+
         public Order()
         {
             OrderActions = new List<OrderAction>();

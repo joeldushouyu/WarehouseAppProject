@@ -13,6 +13,7 @@ namespace ShellDemo.Services
 
         public MockDataStore()
         {
+            /*
             items = new List<Item>()
             {
                 new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an alpha 1 item description." },
@@ -21,7 +22,7 @@ namespace ShellDemo.Services
                 new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description="This is a beta 1 item description." },
                 new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description="This is a beta 1 item description." },
                 new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is a beta 1 item description." }
-            };
+            };*/
         }
 
         public async Task<bool> AddItemAsync(Item item)
@@ -58,11 +59,12 @@ namespace ShellDemo.Services
             return await Task.FromResult(items);
         }
 
+        
         public async Task<IEnumerable<Item>> FindItemsAsync(string newValue)
         {
             return await Task.FromResult(
                 from item in items 
-                where item.Description.ToLower().Contains(newValue.ToLower())
+                where item.Name.ToLower().Contains(newValue.ToLower())
                 select item
             );
         }

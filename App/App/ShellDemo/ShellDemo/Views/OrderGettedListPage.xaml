@@ -10,25 +10,6 @@
              x:Name="BrowseItemsPage">
 
 
-
-    <Shell.SearchHandler>
-        <searchHandlers:ItemSearchHandler 
-            Placeholder="Search Items"
-            ShowsResults="True">
-            <searchHandlers:ItemSearchHandler.ItemTemplate>
-                <DataTemplate x:DataType="model:Order">
-                    <StackLayout>
-                        <Label Text="{Binding ID}" />
-                        <Label Text="{Binding Message}" FontAttributes="Italic" />
-
-                    </StackLayout>
-
-                </DataTemplate>
-            </searchHandlers:ItemSearchHandler.ItemTemplate>
-        </searchHandlers:ItemSearchHandler>
-    </Shell.SearchHandler>
-
-
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Pick" Command="{Binding PickOrderCommand}" />
         <ToolbarItem Text="Update Order" Command="{Binding UpdateOrderCommand}" />

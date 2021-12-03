@@ -11,22 +11,6 @@
 
 
 
-    <Shell.SearchHandler>
-        <searchHandlers:ItemSearchHandler 
-            Placeholder="Search Items"
-            ShowsResults="True">
-            <searchHandlers:ItemSearchHandler.ItemTemplate>
-                <DataTemplate x:DataType="model:Order">
-                    <StackLayout>
-                        <Label Text="{Binding ID}" />
-                        <Label Text="{Binding Message}" FontAttributes="Italic" />
-
-                    </StackLayout>
-
-                </DataTemplate>
-            </searchHandlers:ItemSearchHandler.ItemTemplate>
-        </searchHandlers:ItemSearchHandler>
-    </Shell.SearchHandler>
 
     <!--
       x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.

@@ -31,12 +31,15 @@
 
     
 
-    <FlyoutItem Title="on flyout 1" Icon="tab_feed.png">
+    <FlyoutItem Title="Menu" Icon="tab_feed.png">
         <Tab Title="MainPage" Icon="tab_feed.png">
             <ShellContent Title="Abot" Icon="icon_about.png" Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Orders" Icon="tab_about.png">
             <ShellContent Title="Browse" Icon="icon_feed.png" Route="OrderListPage"  ContentTemplate="{DataTemplate local:OrderListPage}" />
+        </Tab>
+        <Tab Title="Items" Icon="tab_about.png">
+            <ShellContent Title="Browse" Icon="icon_feed.png" Route="ItemListPage"  ContentTemplate="{DataTemplate local:ItemListPage}" />
         </Tab>
         <Tab Title="Picking" Icon="tab_about.png">
             <ShellContent Title="Browse" Icon="icon_feed.png" Route="OrderGettedListPage" ContentTemplate="{DataTemplate local:OrderGettedListPage}" />

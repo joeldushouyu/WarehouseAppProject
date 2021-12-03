@@ -22,66 +22,72 @@ namespace ShellDemo.Services
             databaseOrder.CreateTableAsync<Order>().Wait();
 
             databaseOrderAction = new SQLiteAsyncConnection(dbPath);
-            
             databaseOrderAction.CreateTableAsync<OrderAction>().Wait();
 
 
         }
 
 
-        public Task<List<Order>> GetOrdersAsync()
+        public async Task<List<Order>> GetOrdersAsync()
         {
             //Get all notes.
-            return databaseOrder.Table<Order>().ToListAsync();
+            return await databaseOrder.Table<Order>().ToListAsync();
+        }
+        public async Task<int> SaveOrderAsync(Order ord)
+        {
+            return await databaseOrder.InsertAsync(ord);
+         }
+
+        public async Task<int> DeleteOrderAsync(Order ord)
+        {
+            return await  databaseOrder.DeleteAsync(ord);
         }
 
-
-
-        public Task<int> SaveOrderAsync(Order ord)
+        public async Task<int> ClearOrderAsync()
         {
-         
-                // Save a new note.
-            return databaseOrder.InsertAsync(ord);
-      
+            return await databaseOrder.DeleteAllAsync<Order>();
         }
 
-        public Task<int> DeleteOrderAsync(Order ord)
+        public async Task<List<Order>> LoadOrderListWithOrderActionAsync()
         {
-            // Delete a order
-            return databaseOrder.DeleteAsync(ord);
-        }
-
-
-
-
-
-
-        public Task<List<OrderAction>> GetOrderActionsAsync()
-        {
-            //Get all notes.
-            return databaseOrderAction.Table<OrderAction>().ToListAsync();
-        }
-
-
-
-        public Task<int> SaveOrderActionAsync(OrderAction ord)
-        {
-            if (ord.ID != 0)
+            List<Order> orders = await this.GetOrdersAsync();
+            foreach(Order ord in orders)
             {
-                // Update an existing note.
-                return databaseOrderAction.UpdateAsync(ord);
+                List<OrderAction> actions = await databaseOrderAction.Table<OrderAction>().Where(
+                    (ordAction) => ordAction.FromOrderId == ord.IDAtDatabase).ToListAsync();
+                ord.OrderActions = actions;
             }
-            else
-            {
-                // Save a new note.
-                return databaseOrderAction.InsertAsync(ord);
-            }
+            return orders;
         }
 
-        public Task<int> DeleteNoteAsync(OrderAction ord)
+
+
+        public async Task<List<OrderAction>> GetOrderActionsAsync()
+        {
+            return await  databaseOrderAction.Table<OrderAction>().ToListAsync();
+        }
+
+        public async Task<int> ClearOrderActionAsync()
+        {
+            return await databaseOrderAction.DeleteAllAsync<OrderAction>();
+        }
+
+        public async Task<int> SaveOrderActionAsync(OrderAction ord)
+        {
+        
+            // Save a new note.
+            return await databaseOrderAction.InsertAsync(ord);
+            
+        }
+        public async Task<int> UpdateOrderActionAsync(OrderAction ord)
+        {
+            return await databaseOrderAction.UpdateAsync(ord);
+        }
+
+        public async Task<int> DeleteNoteAsync(OrderAction ord)
         {
             // Delete a note.
-            return databaseOrderAction.DeleteAsync(ord);
+            return await databaseOrderAction .DeleteAsync(ord);
         }
     }
 }

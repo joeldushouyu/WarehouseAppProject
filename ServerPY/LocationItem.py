@@ -3,7 +3,7 @@ from PIL import Image
 from Notification import  Notification
 from Enumerables.NotificationType import  NotificationType
 import io
-from ServerModel import  db
+from Database import  db
 
 
 #https://stackoverflow.com/questions/1167617/in-python-how-do-i-indicate-im-overriding-a-method
@@ -30,7 +30,7 @@ class LocationItem(db.Model):
     @overrides(LocationComponent)
     def remove(self, loc):
         raise Exception("Function is not callable in LocationITem")
-
+"""
 z = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 db.create_all()
 for v in z:
@@ -38,5 +38,5 @@ for v in z:
         for i in range(0,10):
             p = LocationItem(sectionAndLocation = v+k+str(i), )
             db.session.add(p)
+"""
 
-db.session.commit()

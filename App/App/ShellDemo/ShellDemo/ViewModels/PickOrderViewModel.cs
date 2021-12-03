@@ -105,43 +105,20 @@ namespace ShellDemo.ViewModels
 
         }
 
-        private void ConfirmGetOrder()
+        private async void ConfirmGetOrder()
         {
             try
             {   /*
                 string url = MobileApp.GetSingletion().BaseUrl + "/confirm";
                 var respondCode = url.WithTimeout(20).PostJsonAsync(ans).Result;
                 */
-                Services.ServerRequest.ConfirmPickOrderRequest();
+                await Services.ServerRequest.ConfirmPickOrderRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
                 // means user successfully Get the order
                 needConfirmation = false;
             }
             catch (Exception e)
             {
-                if (e.InnerException is FlurlHttpTimeoutException)
-                {
-                    throw e; // tell user to retry in the onUpdate code's catch
-                }
-                else if (e.InnerException is FlurlHttpException)
-                {
-                    // most likely 404 code, means the server has already processsed it
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
-                    if (errorcode == 404)
-                    {
-                        needConfirmation = false; // the server has already process the request
-                    }
-                    else
-                    {
-                        // could be 500 code
-                        throw e;
-                    }
-
-                }
-                else
-                {
-                    throw e;
-                }
-
+                throw e;
             }
         }
         private async void PickOrder()
@@ -152,7 +129,7 @@ namespace ShellDemo.ViewModels
 
                 if (needConfirmation == false)
                 {
-                    respond = Services.ServerRequest.PickOrderRequest(this.ord, this._barCodeid);
+                    respond = await Services .ServerRequest.PickOrderRequest(this.ord, this._barCodeid, MobileApp.GetSingletion().User.CurrentSessionUUID);
                     needConfirmation = true;
 
                     foreach (OrderAction orda in respond)
@@ -169,6 +146,12 @@ namespace ShellDemo.ViewModels
                 ConfirmGetOrder();
                 // after server successfully receive the request
                 MobileApp.GetSingletion().User.Orders.Add(ord);
+                _ = await MobileApp.GetSingletion().LocalDatabase.SaveOrderAsync(ord);// save to database
+
+                foreach(OrderAction ordAct in ord.OrderActions)
+                {
+                    _ = await MobileApp.GetSingletion().LocalDatabase.SaveOrderActionAsync(ordAct);
+                }
 
                 //TODO write to database later
                 //_ = await MobileApp.GetSingletion().LocalDatabase.SaveOrderAsync(ord);
@@ -185,29 +168,7 @@ namespace ShellDemo.ViewModels
             }
             catch (Exception e)
             {
-                if(e.InnerException is FlurlHttpTimeoutException)
-                {
-                    ErrorGetOrderMessage = "An network Error occurs, please retry";
-                }else if(e.InnerException is FlurlHttpException)
-                {
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)e.InnerException).StatusCode;
-                    if (errorcode == 403)
-                    {
-                        ErrorGetOrderMessage = "An error occurs with your account, please try to logout and re-login";
-                    }
-                    else if (errorcode == 404)
-                    {
-                        ErrorGetOrderMessage = e.Message;
-                    }
-                    else
-                    {
-                        ErrorGetOrderMessage = "Unknow network failure";
-                    }
-                }
-                else
-                {
-                    ErrorGetOrderMessage = "Hello world";
-                }
+                ErrorGetOrderMessage = e.Message;
                 
             }
         }
