@@ -88,16 +88,28 @@ namespace ShellDemo.ViewModels
             }
         }
 
+        /// <summary>
+        /// This function check to see if there are still orders left in User.Orders
+        /// </summary>
+        /// <returns>return true if does, else false</returns>
         public bool DangerInLogout()
         {
             return MobileApp.GetSingletion().User.Orders.Count != 0;
         }
 
+        /// <summary>
+        /// This function clear out the data in Username and Password Property
+        /// </summary>
         public void ClearOutData()
         {
             Username = "";
             Password = "";
         }
+
+        /// <summary>
+        /// This function sends a confirm request to the server, confirm login. Throw Execption for any error occurs
+        /// </summary>
+        /// <param name="ans"> UserSession with current UUID from server</param>
         private async void ConfirmLogin(UserSession ans)
         {
             try
@@ -115,6 +127,9 @@ namespace ShellDemo.ViewModels
 
         }
 
+        /// <summary>
+        /// This sends a logout request to the server to logout current account
+        /// </summary>
         public async void Logout()
         {
             try
@@ -129,7 +144,12 @@ namespace ShellDemo.ViewModels
 
 
         }
-        private async void OnLoginClicked(object obj)
+
+        /// <summary>
+        /// Event handler when user clicks the login button
+        /// This sends a login request to the server
+        /// </summary>
+        private async void OnLoginClicked()
         {
             // ask the server to send request to server.
             CanLogin = false;
@@ -170,10 +190,6 @@ namespace ShellDemo.ViewModels
                 ErrorMessage = e.Message;
             }
             CanLogin = true;
-
-            //catch(Java.Net.UnknownHostException)
-            // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
-
 
            
         }

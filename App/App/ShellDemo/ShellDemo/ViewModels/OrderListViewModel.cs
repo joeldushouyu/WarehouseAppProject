@@ -46,6 +46,10 @@ namespace ShellDemo.ViewModels
        
         }
 
+        /// <summary>
+        /// send request to Order to load Orders that is within User's picking range
+        /// </summary>
+        /// <returns></returns>
         async Task ExecuteLoadItemsCommand()
         {
             IsBusy = true;
@@ -57,11 +61,7 @@ namespace ShellDemo.ViewModels
 
                 Orders.Clear();
 
-                string url = MobileApp.GetSingletion().BaseUrl + "/orderList";
 
-
-
-                //JsonConvert.SerializeObject()
      
                 List<Order> message = await Services.ServerRequest.LoadOrderRequest(MobileApp.GetSingletion().User);
 
@@ -72,11 +72,7 @@ namespace ShellDemo.ViewModels
                     this.Orders.Add(ord);
                 }
                 this._errorMessage = "";
-                //var items = await DataStore.GetItemsAsync(true);
-                /*foreach (var item in items)
-                {
-                    Items.Add(item);
-                }*/
+
             }
             catch (Exception ex)
             {
@@ -120,8 +116,7 @@ namespace ShellDemo.ViewModels
                 var page = new OrderDetailPage(new OrderDetailViewModel(item));
                 _ = Shell.Current.Navigation.PushAsync(page);
             }
-           // var page = new ItemDetailPage(new ItemDetailViewModel(item));  // create a non nodal page
-           // _ = Shell.Current.Navigation.PushAsync(page);
+
 
         }
     }

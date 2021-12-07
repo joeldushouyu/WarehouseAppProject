@@ -41,7 +41,7 @@ namespace ShellDemo.Models
         private string _workingSection = "";
 
         [JsonProperty("section")]
-        // potentially no longer needs to by a JsonProperty
+
         public string WorkingSection
         {
             get
@@ -82,11 +82,7 @@ namespace ShellDemo.Models
             get => _pass;
         }
 
-        /*
-         internal void OnSerializingMethod(StreamingContext context)
-         {
-             Session = this._currentSession.Session;
-         }*/
+
         private List<Order> _orders;
         public List<Order> Orders
         {
@@ -115,10 +111,18 @@ namespace ShellDemo.Models
             this.Password = "";
             this.Orders = new List<Order>();
         }
+        /// <summary>
+        /// The function determine if the current user is logout by checking User.CurrentSessionUUID is empty or not
+        /// </summary>
+        /// <returns> bool to indicate true or false</returns>
         public bool IsLogout()
         {
             return this.CurrentSessionUUID == "";
         }
+
+        /// <summary>
+        /// This function will sorted all OrderActions in each of the Order in User.Orders, and assign to User.SortedOrderActions
+        /// </summary>
         public void SortOrderActions()
         {
             _sortedOrderActions.Clear();
@@ -169,24 +173,14 @@ namespace ShellDemo.Models
             }
 
             //now sort them base on the locationID in each orderAction
-            /*this.SortedOrderActions.Sort((OrderAction act1, OrderAction act2) => { 
-                
-                if(act1.LocationId < act2.LocationId)
-                {
-                    return -1;
-                }
-                else if(act1.LocationId == act2.LocationId)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return 1;
-                }
-            });*/
-        
+           
 
         }
+
+        /// <summary>
+        /// This function calculate and convert user's current Picking range in User.WorkingSection
+        /// </summary>
+        /// <returns> A List<int>, where [0] represent beginning picking range, and [1] represent the ending picking range </int></inheritdoc>/></returns>
         public List<int> CalculatePickingRange()
         {
             List<string> sectionHeaders =new List<string> {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
@@ -208,21 +202,7 @@ namespace ShellDemo.Models
 
             return returnList;
         }
-        /*
-        public int currentOrderIndex()
-        {
-            for(int i = 0; i < this.Orders.Count; i++)
-            {
-                // iterate each order, return the first order.currentOrderaction() that is not -1
-                if (this.Orders[i].currentOrderActionIndex() != -1)
-                {
-                    return i; // means this order has not completed by user.
-                }
-           
-            }
-            return -1;  //means all orders has completed
-            
-        }*/
+        
         public User()
         {
             _currentSessionUUID = ""; // inidication that is not logined

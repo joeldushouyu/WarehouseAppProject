@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace ShellDemo.Models
 {
+    //This class used to send out information to server in order to update the Orders
     public class UpdateOrderRequest
     {
         private string _session;

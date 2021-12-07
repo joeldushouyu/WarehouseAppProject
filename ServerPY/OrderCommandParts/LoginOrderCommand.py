@@ -9,13 +9,13 @@ class LoginOrderCommand(Command):
 
 
     def execute(self):
-        #TODO: execute the command in user
+
         self.OnRelease()
         loginedUsers.append(self.currentUser) # add the current user into
 
 
     def interpretData(self):
-        # TODO: interpret the data base on typs od command
+
         raise Exception("Function is not callable")
 
     def OnRelease(self):

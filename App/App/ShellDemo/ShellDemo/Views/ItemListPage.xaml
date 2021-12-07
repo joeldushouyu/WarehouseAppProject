@@ -19,7 +19,7 @@
     -->
 
     <StackLayout Padding="10"  >
-        <Label x:DataType="local:ItemListViewModel" Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding isErrorMessageVisible}" />
+        <Label x:DataType="local:ItemListViewModel" Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding IsErrorMessageVisible}" />
     <RefreshView x:DataType="local:ItemListViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
 
 

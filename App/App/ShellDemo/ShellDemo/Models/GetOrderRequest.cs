@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ShellDemo.Models
-{
+{   
+    // This class is used in receiving respond from server when user request to Pick up a order
     public class GetOrderRequest
     {
         private string _session;
@@ -36,7 +37,7 @@ namespace ShellDemo.Models
         }
 
         [JsonProperty("assignedBarcode")]
-        public int Barcode
+        public long Barcode
         {
             set;
             get;

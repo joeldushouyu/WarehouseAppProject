@@ -105,13 +105,13 @@ namespace ShellDemo.ViewModels
 
         }
 
+        /// <summary>
+        /// Send request to server to confirm Pick Order, throw Execption when error occurs
+        /// </summary>
         private async void ConfirmGetOrder()
         {
             try
-            {   /*
-                string url = MobileApp.GetSingletion().BaseUrl + "/confirm";
-                var respondCode = url.WithTimeout(20).PostJsonAsync(ans).Result;
-                */
+            {   
                 await Services.ServerRequest.ConfirmPickOrderRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
                 // means user successfully Get the order
                 needConfirmation = false;
@@ -121,6 +121,8 @@ namespace ShellDemo.ViewModels
                 throw e;
             }
         }
+
+
         private async void PickOrder()
         {
             try
@@ -153,8 +155,6 @@ namespace ShellDemo.ViewModels
                     _ = await MobileApp.GetSingletion().LocalDatabase.SaveOrderActionAsync(ordAct);
                 }
 
-                //TODO write to database later
-                //_ = await MobileApp.GetSingletion().LocalDatabase.SaveOrderAsync(ord);
 
                 //push back to orderlist page
                 // remove detail page,
@@ -166,7 +166,7 @@ namespace ShellDemo.ViewModels
                 await Shell.Current.Navigation.PopAsync();
 
             }
-            catch (Exception e)
+                catch (Exception e)
             {
                 ErrorGetOrderMessage = e.Message;
                 
@@ -177,7 +177,6 @@ namespace ShellDemo.ViewModels
         {
             IsScanning = true;
 
-            //ZXingScannerView_OnScan();
 
         }
         public void ZXingScannerView_OnScan()
@@ -195,6 +194,11 @@ namespace ShellDemo.ViewModels
             }
         }
 
+        /// <summary>
+        /// Verify wheter the passing barcode is valid or not
+        /// </summary>
+        /// <param name="newBarCode"></param>
+        /// <returns></returns>
         private bool valideBarCode(string newBarCode)
         {
             try

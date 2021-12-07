@@ -16,12 +16,17 @@ class OrderAction(db.Model):
 
 
     def to_dict(self):
+        """
+        Serialization of the object
+        :return: dict with the information
+        """
         return {"id": self.id, "fromOrderID": self.fromOrderID, "action": self.action, "quantity": self.quantity
                 , "itemBarcode":self.itemBarcode, "locationId":self.locationId, "status":self.status}
 
     # exception should be handle by its caller
     # should also check if the data has data or not
     def from_dict(self, data:dict):
+
       self.id = data["id"]
       self.fromOrderID = data["fromOrderID"]
       self.action = ActionType[data["action"]]

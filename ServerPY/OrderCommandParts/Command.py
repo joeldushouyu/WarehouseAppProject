@@ -10,13 +10,13 @@ class Command():
         self.correspondOrder = order
 
     def execute(self):
-        #TODO: execute the command in user
+
         pass
 
     def interpretData(self):
-        # TODO: interpret the data base on typs od command
+
         pass
     def OnRelease(self):
-        # TODO: calls when the command is going to be release and delete
+
         pass
 

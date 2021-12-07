@@ -37,6 +37,10 @@ namespace ShellDemo.Models
         public string SectionAndLocation { get; set; }
 
         
+        /// <summary>
+        /// The function receive an Item object, it will substitue all datas in the object with the data in the pass in object
+        /// </summary>
+        /// <param name="item"></param>
         public void UpdateInformation(Item item)
         {
             this.Id = item.Id;

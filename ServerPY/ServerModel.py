@@ -26,18 +26,15 @@ lock = Lock()
 
 
 
-orderActionOrderId = OrderAction.query.all() #TODO have thread update this
-#app = Flask(__name__)
-"""
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.sqlite3'
-
-
-db = SQLAlchemy(app)
-db.create_all()"""
-
-
+orderActionOrderId = OrderAction.query.all()
 
 def determine_range(s:str):
+    """
+    The function determine the picking range of correspond sectionAndLocation been pass
+    :param s:  BeginSection-EndSection  Ex:"AA-BB"
+    :return: tuple(initalpickingRange:int, finalPickingRange:int)
+    """
+
     number = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
               "V", "W", "X", "Y", "Z"]
     begin = number.index(s[0]) * 260 + number.index(s[1]) * 10 + 1
@@ -69,10 +66,12 @@ def start_request():
 @app.route("/login", methods=['POST'])
 def login():
     userInfo_dict = request.get_json()
-
     try:
         username = userInfo_dict["accountName"]
         password = userInfo_dict["password"]
+    except Exception:
+        abort(404, description="Incorrect format")
+    try:
 
 
         # first to a check and see if the user is already in the activeSessionList
@@ -125,7 +124,7 @@ def login():
                 abort(403, description="Invalid username or password")
     except KeyError as e:
         abort(404, description="Incorrect format")
-    except Exception as e:
+    except HTTPException as e:
 
         if(e.code ==405):
             abort(405, description="Your account is login on other device")
@@ -133,6 +132,7 @@ def login():
             abort(403, description="Invalid username or password")
         else:
             abort(404, description="Incorrect format")
+
     #return jsonify([product.to_dict() for product in products])
 
 
@@ -157,7 +157,7 @@ def confirm_action():
             # if still here, means it did not find a session that match
             abort(404)
 
-    except Exception as e:
+    except HTTPException as e:
         abort(404, description="Did not find valid session with the uuid provided")
 
 
@@ -177,7 +177,7 @@ def is_login():
 
             else:
                 return flask.Response(200)
-    except Exception as e:
+    except HTTPException as e:
         if(e.code == 400):
             abort(400, "User has not logined")
         abort(404, description="Incorrect format information")
@@ -194,13 +194,13 @@ def is_pickup_by_user(order_id:int):
 
     try:
         user = find_login_user(userUuid)
-        #ord = find_order(order_id)
+
 
         if(len([o for o in user.pickedUpOrders if o.id == order_id]) == 1):
             return flask.Response(200)
         else:
             abort(404, "Not pickedup by user")
-    except Exception as e:
+    except HTTPException as e:
         abort(404, "incorrect format")
 
 @app.route("/readyToLogout", methods=['POST'])
@@ -217,7 +217,7 @@ def user_ready_to_logout():
             flask.Response(200)
         else:
             abort(404)
-    except Exception as e:
+    except HTTPException as e:
         if(e.code == 404):
             abort(404, description="User is not ready to logout yet")
         else:
@@ -272,7 +272,7 @@ def order():
             return flask.jsonify([ ords.to_dict() for ords in returnOrders])
 
 
-    except Exception as e:
+    except HTTPException as e:
         if(e.code == 403):
             abort(403, description="incorrect uuid")
         abort(404, description="Incorrect format information")
@@ -290,9 +290,7 @@ def pick_order():
 
     try:
 
-        #TODO: could user pick up? check for twice action
-        # first check if the server is already
-        # check and see if the order is already in a Session() in the activeSessionList
+
         ordSess = [ses for ses in activeSessionList if isinstance(ses.action, GetOrderCommand) and ses.sessionUUID ==userUuid ]
         if(len(ordSess)) == 1:
             # means the request has already received by user,
@@ -339,11 +337,13 @@ def pick_order():
                     abort(404)  # no id associate with this order
 
 
-    except Exception as e:
+    except HTTPException as e:
         if(e.code == 403):
             abort(403, description="incorrexct uuid")
-        elif(e.code == 404 and e.message == "This order has already been picked up by someone else"):
+        if(e.code == 404 ):
+
             abort(404, description="This order has already been picked up by someone else")
+
         else:
             abort(404, description="Incorrect format information")
 
@@ -417,18 +417,20 @@ def update_order():
                                     # incorrect quantity value
                                     errorOrderIDList.append(update_order_list_dict[i]["id"])
                                     break
+
                                 else:
                                     #TODO: Also verify each item id?
                                     tempOrderAction_dict_list.append(orderActDict)
                 updateSession = Session(userUUID, UpdateOrderCommand(user, None, tempOrderAction_dict_list, errorOrderIDList), date.today(), user)
                 activeSessionList.append(updateSession)
                 return {"ErrorOrderID":errorOrderIDList}
+                #return {"ErrorOrderID": [1,2]}
 
 
 
 
 
-    except Exception as e:
+    except HTTPException as e:
         if(e.code == 403):
             abort(403, description="incorrect uuid")
         else:
@@ -470,7 +472,7 @@ def item_detail(location_id:int):
                             return item.to_dict()
 
 
-    except Exception as e:
+    except HTTPException as e:
         if(e.code == 403):
             abort(403, description="incorrect uuid")
         abort(404, description="Incorrect format information")
@@ -502,7 +504,7 @@ def item_list():
 
 
 
-    except Exception as e:
+    except HTTPException as e:
         if (e.code == 403):
             abort(403, description="incorrect uuid")
 
@@ -531,35 +533,52 @@ def logout_user():
             releaseSession.execute()
             return flask.Response(200)
 
-    except Exception as e:
+    except HTTPException as e:
         abort(500, "Unknow error occurs with server")
 
 
 
 
-    # now try to update the
+
 
 def find_login_user(uuid:str):
+    """
+    The function search to see if this uuid is correspond to any logine user
+    :param uuid:
+    :return the user object if found, else return None:
+    """
     loginUser = [log for log in loginedUsers if str(log.sessionId) == str(uuid)]
     if(len(loginUser) == 1):
         return loginUser[0]
     else:
         return None
 
+
 def find_order(id:int):
+    """
+    The function search the database to see of and Order correspond the passing id
+    :param id:
+    :return: Order object if found, else return None
+    """
     ords = Order.query.filter_by(id=id).first()
     if ords != None:
         return ords
     else:
         return None
+
+
 def find_orderAction(id:int):
+    """
+    The function search for OrderAction that correspond to the id
+    :param id:
+    :return: OrderAction if found, else return None
+    """
     orderAction = OrderAction.query.filter_by(id=id).first()
     if orderAction != None:
         return orderAction
     else:
         return None
-#TODO
-# need another thread to regularly clear out the Command /activeUserSession, also for logined user??
+
 
 
 if __name__ == '__main__':

@@ -71,7 +71,7 @@ class UpdateOrderCommand(Command):
 
 
     def OnRelease(self):
-        # TODO: calls when the command is going to be release and delete
+
         pass
 
     def find_order(self,id: int):

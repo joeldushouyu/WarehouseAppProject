@@ -12,5 +12,3 @@ def convert_picture_to_byte_array():
     roi_img.save(imgByteArr, format=image.format)
     imgByteArr = imgByteArr.getvalue()
     return imgByteArr
-
-p = Item(itemba)

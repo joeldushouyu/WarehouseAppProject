@@ -11,6 +11,12 @@ namespace ShellDemo.Services
     public class ServerRequest
     {
         public static string BaseUrl = "http://10.0.2.2:5000";
+        /// <summary>
+        /// The function sends a request to sever for login. It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns> UserSession with information from the server</returns>
         public static async Task<UserSession> LoginRequest(string username, string password)
         {
             try
@@ -55,6 +61,13 @@ namespace ShellDemo.Services
             }
 
         }
+
+        /// <summary>
+        /// The function sends a confirm login request to the server.
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="ans"> </param>
+        /// <returns>true only when successfull login.</returns>
         public static async Task<bool> ConfirmLoginRequest(UserSession ans)
         {
             try
@@ -90,7 +103,15 @@ namespace ShellDemo.Services
 
         }
 
-        public static async Task<List<OrderAction>> PickOrderRequest(Order ord, string _barCodeid, string userUUID)
+        /// <summary>
+        /// It sends an request to the server to pick up a Order from the server
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="ord">  The order that trying to pickup </param>
+        /// <param name="_barCodeid"> The assigned barcode number to this specific order  </param>
+        /// <param name="userUUID"> User's current active UUID receive from login </param>
+        /// <returns> List< OrderAction> correspond to this order from the server</returns>
+        public static async Task<List<OrderAction>> PickOrderRequest(Order ord, string barCodeid, string userUUID)
         {
             try
             {
@@ -99,7 +120,7 @@ namespace ShellDemo.Services
                 {
                     Session = userUUID,
                     OrderID = ord.IDAtDatabase,
-                    Barcode = Int32.Parse(_barCodeid)
+                    Barcode = long.Parse(barCodeid)
                 }).ReceiveJson<List<OrderAction>>();
                 return respond;
             }
@@ -120,7 +141,7 @@ namespace ShellDemo.Services
                 }
                 else if (errorcode == 404)
                 {
-                    throw new Exception(e.Message);
+                    throw new Exception("The order has already been picked up by other users");
                 }
                 else
                 {
@@ -134,6 +155,12 @@ namespace ShellDemo.Services
 
         }
 
+        /// <summary>
+        /// the function sends a confirm pick up order request to the server
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="userUUID"> current active UUID from login</param>
+        /// <returns>Return true if success receive by the server, else raise exception </returns>
         public static async Task<bool> ConfirmPickOrderRequest(string userUUID)
         {
             try
@@ -175,6 +202,13 @@ namespace ShellDemo.Services
 
         }
 
+        /// <summary>
+        /// The function send an update request to the server, to update the server with current Order
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="UserSession"> current active user UUID from the login</param>
+        /// <param name="orders"> Orders want to update to the server </param>
+        /// <returns>UpdateOrderResponse contains the response information of the server</returns>
         public static async Task<UpdateOrderResponse> UpdateRequest(string UserSession, List<Order>orders)
         {
             try
@@ -226,6 +260,13 @@ namespace ShellDemo.Services
 
         }
 
+
+        /// <summary>
+        /// Send a request to the server to confirm UpdateOrder request
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="UserUUID"> Current Active user UUID receive from login</param>
+        /// <returns> true if successfully login</returns>
         public static async Task<bool> ConfirmUpdateRequest(string UserUUID)
         {
             try
@@ -270,6 +311,11 @@ namespace ShellDemo.Services
          
         }
 
+        /// <summary>
+        /// Send a request to server to logout this user correspond to the user UUID
+        /// </summary>
+        /// <param name="UserUUID">Current Active user UUID from login</param>
+        /// <returns></returns>
         public static async Task LogoutRequest( string UserUUID)
         {
             try
@@ -290,6 +336,13 @@ namespace ShellDemo.Services
             
         }
 
+        /// <summary>
+        /// Send request to server to get detail information about this item
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="locationID"> LocationID correspond to thsi Item </param>
+        /// <param name="UserUUID"> current Active user UUID received from login</param>
+        /// <returns></returns>
         public static async Task<Item> LoadItemRequest(long locationID, string UserUUID)
         {
             try
@@ -327,6 +380,12 @@ namespace ShellDemo.Services
 
         }
 
+        /// <summary>
+        /// Send request to server to get a list of Orders that is within user's picking range
+        /// It throws out Exception with customized message correspond to different error message.
+        /// </summary>
+        /// <param name="user"> current logined user</param>
+        /// <returns></returns>
         public static async Task<List<Order>> LoadOrderRequest( User user)
         {
             try
@@ -371,6 +430,11 @@ namespace ShellDemo.Services
                 throw new Exception("Unknow error has occurred, please retry");
             }
         }
+        /// <summary>
+        /// Send a request to server to load all Items in the warehouse
+        /// </summary>
+        /// <param name="UserUUID"> current Active user UUID receive from login</param>
+        /// <returns></returns>
         public static async  Task<List<Item>> LoadItemListRequest(string UserUUID)
         {   
             try

@@ -19,9 +19,20 @@ namespace ShellDemo.ViewModels
         private bool needConfirmation = false;
         private UpdateOrderResponse respond;
 
-       
 
-        public string ErrorOrderInformation { get; set; }
+        private string _errorOrderInformation;
+        public string ErrorOrderInformation
+        {
+            get
+            {
+                return _errorOrderInformation;
+            }
+            set
+            {
+                SetProperty(ref _errorOrderInformation, value);
+                OnPropertyChanged(nameof(ErrorOrderInformation));
+            }
+        }
         public bool _isFinishUpdate;
         public bool IsFinishUpdate
         {
@@ -71,6 +82,9 @@ namespace ShellDemo.ViewModels
             await Shell.Current.Navigation.PopAsync();
         }
 
+        /// <summary>
+        /// The function sends an  confirm Update Order request to the server, it throws Exception for any error occurs.
+        /// </summary>
         private void ConfirmUpdateOrder()
         {
             try
@@ -89,6 +103,9 @@ namespace ShellDemo.ViewModels
 
         }
 
+        /// <summary>
+        /// The function sends update request to the server to update Orders picked by user.
+        /// </summary>
         public async void OnUpdate()
         {
             IsFinishUpdate= false;
@@ -121,19 +138,22 @@ namespace ShellDemo.ViewModels
                 }
                 else
                 {
+                    
+                    ErrorOrderInformation = "";
                     // means error order occurs
                     foreach(long orderID in errorOrders.ErrorOrderID)
                     {
-                        ErrorOrderInformation = "Error Order Information";
+                        
                         Order ord = null;
                         foreach(Order ordertemp in MobileApp.GetSingletion().User.Orders)
                         {
                             if(ordertemp.IDAtDatabase == orderID)
                             {
                                 ord = ordertemp;
+                                ErrorOrderInformation += String.Format("OrderID:{0}   OrderBarCode:{1}", ord.IDAtDatabase, ord.BarCode)+ "\n";
                                 break;
                             }
-                            ErrorOrderInformation += String.Format("OrderID:{0}   OrderBarCode:{1}", ord.IDAtDatabase, ord.BarCode);
+                            
 
 
                         }

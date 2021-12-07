@@ -47,25 +47,12 @@ namespace ShellDemo.Models
         [Ignore]
         public List<OrderAction> OrderActions { get; set; }
 
-        /*
-        public int currentOrderActionIndex()
-        {
-            for(int i = 0; i < OrderActions.Count; i++)
-            {   
-                //iterate over each orderActions in this Order
-                var ordAct = OrderActions[i] as OrderAction;
-                if( withinPickingRange(ordAct.LocationId) && ordAct.Completed == false)
-                {   
-                   
-                    return i;  // return the index of this orderAction.
-                }
-
-            }
-            return -1; // indicate this order is complete so far base on user's picking section and status.
-        }*/
-
-        
-        public bool withinPickingRange(int locationID)
+        /// <summary>
+        /// The function check to see whether the locationID passed in is withing currentOrder's range of picking/supplying
+        /// </summary>
+        /// <param name="locationID"></param>
+        /// <returns>boolean </returns>
+        public bool WithinPickingRange(long locationID)
         {
             List<int>pickingRange =  MobileApp.GetSingletion().User.CalculatePickingRange();
             int beginngRange = pickingRange[0];

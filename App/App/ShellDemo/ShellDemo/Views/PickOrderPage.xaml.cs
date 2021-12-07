@@ -31,6 +31,7 @@ namespace ShellDemo.Views
             InitializeComponent();
             this.BindingContext = ordPage;
             ordPage.scanner = this.ZxingScan;
+            NavigationPage.SetBackButtonTitle(this, ""); // hide backward button for PickRestockPage
         }
 
 

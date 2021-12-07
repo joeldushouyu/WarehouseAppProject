@@ -9,7 +9,9 @@
 
             <Button Text="Update with Server" Command="{Binding UpdateCommand}"/>
             <Label Text="{Binding ErrorMessage}" TextColor="Red" />
-            <Label Text="{Binding ErrorOrderInformation}"/>
+
+            <Label Text="Error Order Information"/>
+            <Label Text="{Binding ErrorOrderInformation}" TextColor="Red"/>
             <Button Text="Finish" Command="{Binding Finish}" IsEnabled="{Binding IsFinishUpdate}" />
 
 

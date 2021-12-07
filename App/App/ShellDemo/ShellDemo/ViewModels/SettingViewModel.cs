@@ -48,6 +48,9 @@ namespace ShellDemo.ViewModels
             OnSave = new Command(canSave);
         }
 
+        /// <summary>
+        /// The function will initalize Locations property with each section name
+        /// </summary>
         public void InitalizeLocationnList()
         {
             List<string> Letters = new List<string>{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
@@ -77,10 +80,10 @@ namespace ShellDemo.ViewModels
 
 
 
-
-        // direct copy code from UpdateOrderViewModel
-
-
+        /// <summary>
+        /// The function above verify if the property InitalizeLocationByUser and FinalLocationByUser is valid or not.
+        /// If it does, it redirect user to Mainpage, else it shows error message in ErrorMessage property
+        /// </summary>
         public void canSave()
         {
             ErrorMessage = "";

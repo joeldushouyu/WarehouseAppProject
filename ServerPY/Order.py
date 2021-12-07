@@ -14,11 +14,7 @@ class Order(db.Model):
     locked = db.Column(db.Boolean(False), nullable=False)
     message =  db.Column(db.String(100), nullable=True)
 
-        # indicate which OrderActionIndex has not been completed
-        # note: the index refer to a order that has its orderAction been sorted
-        #TODO: add to documentation
-    #orderActionsId = db.Column(db.String(10000), nullable=True)
-        # a string contains all the orderActionId, Ex: "1212,2323,3232"
+
 
     @orm.reconstructor
     def __init__(self, **kwargs):

@@ -7,6 +7,7 @@ using SQLite;
 using ShellDemo.Models;
 namespace ShellDemo.Services
 {
+    //This class handles accessing SQLITE database on the phone
     public class Database
     {
 
@@ -48,6 +49,10 @@ namespace ShellDemo.Services
             return await databaseOrder.DeleteAllAsync<Order>();
         }
 
+        /// <summary>
+        /// The function loads List<Order> from the sql database, each order in the list will also be loaded with correspond OrderAction from the database
+        /// </summary>
+        /// <returns>List<Order> full initalize from the database</returns>
         public async Task<List<Order>> LoadOrderListWithOrderActionAsync()
         {
             List<Order> orders = await this.GetOrdersAsync();
@@ -84,9 +89,9 @@ namespace ShellDemo.Services
             return await databaseOrderAction.UpdateAsync(ord);
         }
 
-        public async Task<int> DeleteNoteAsync(OrderAction ord)
+        public async Task<int> DeleteOrderActionAsync(OrderAction ord)
         {
-            // Delete a note.
+ 
             return await databaseOrderAction .DeleteAsync(ord);
         }
     }

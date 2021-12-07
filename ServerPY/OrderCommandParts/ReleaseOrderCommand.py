@@ -10,7 +10,7 @@ class ReleaseOrderCommand(Command):
 
 
     def execute(self):
-        #TODO: execute the command in user
+
         with lock:
             # get all orders in user's
             for order in self.currentUser.pickedUpOrders:
@@ -26,8 +26,8 @@ class ReleaseOrderCommand(Command):
 
 
     def interpretData(self):
-        # TODO: interpret the data base on typs od command
+
         pass
     def OnRelease(self):
-        # TODO: calls when the command is going to be release and delete
+
         pass

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using ShellDemo.Views;
-using ShellDemo.Models;
 using ShellDemo.Services;
 using Flurl.Http;
 
@@ -66,6 +65,9 @@ namespace ShellDemo.ViewModels
 
         }
 
+        /// <summary>
+        /// This function sends a request to server, and load detail information of the item to Properties in this viewModel
+        /// </summary>
         public async void LoadItem()
         {
             // first, get this item from the server

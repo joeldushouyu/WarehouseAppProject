@@ -21,7 +21,7 @@ namespace ShellDemo.ViewModels
        
         public Command<Item> ItemTapped { get; }
 
-        public Boolean isErrorMessageVisible => this._errorMessage.Length != 0;
+        public Boolean IsErrorMessageVisible => this._errorMessage.Length != 0;
 
 
         private string _errorMessage;
@@ -31,7 +31,7 @@ namespace ShellDemo.ViewModels
             set
             {
                 SetProperty(ref _errorMessage, value);
-                OnPropertyChanged(nameof(isErrorMessageVisible));
+                OnPropertyChanged(nameof(IsErrorMessageVisible));
             }
         }
 
@@ -45,13 +45,13 @@ namespace ShellDemo.ViewModels
 
        
         }
-
+        /// <summary>
+        /// This function sends a request to the server to load List<Item> that is in the warehouse
+        /// </summary>
+        /// <returns></returns>
         async Task ExecuteLoadItemsCommand()
         {
             IsBusy = true;
-
-
-            // load data from singleton 
             
             try
             {
@@ -59,46 +59,19 @@ namespace ShellDemo.ViewModels
                 ErrorMessage = "";
                 Items.Clear();
 
-                string url = MobileApp.GetSingletion().BaseUrl + "/orderList";
 
-
-
-                //JsonConvert.SerializeObject()
                 List<Item>respond = await ServerRequest.LoadItemListRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
 
                 foreach(Item item in respond)
                 {
                     Items.Add(item);
                 }
-                //this.Items = new ObservableCollection<Item>(respond);
-                //var items = await DataStore.GetItemsAsync(true);
+ 
+
 
             }
             catch (Exception ex)
             {
-                /*
-                if(ex.InnerException is FlurlHttpTimeoutException)
-                {
-                    ErrorMessage = "An internet error occurs, please try to refresth the page";
-                }else if (ex.InnerException is OperationCanceledException)
-                {
-                    ErrorMessage = "An network error occurs, please try to refresh the page";
-                } else if(ex.InnerException is FlurlHttpException)
-                {
-                    int errorcode = (int)((Flurl.Http.FlurlHttpException)ex.InnerException).StatusCode;
-                    if(errorcode == 403)
-                    {
-                        ErrorMessage = "Invalid cridential, please try to relogin";
-                    }
-                    else
-                    {
-                        ErrorMessage = "Unknow network error occurs, please retry";
-                    }
-                }
-                else
-                {
-                    ErrorMessage = "unknow error occurs, please retry";
-                }*/
                 ErrorMessage = ex.Message;
             }
             finally
@@ -106,7 +79,7 @@ namespace ShellDemo.ViewModels
                 IsBusy = false;
                 if (ErrorMessage.Length != 0)
                 {
-                    var s =isErrorMessageVisible;
+                    var s =IsErrorMessageVisible;  // call this, update all properities
                 }
             }
 
@@ -132,7 +105,7 @@ namespace ShellDemo.ViewModels
 
         void OnItemSelected(Item item)
         {
-            //TODO: modify
+ 
             if (item == null)
                 return;
             else
@@ -140,8 +113,7 @@ namespace ShellDemo.ViewModels
                 var page = new ItemDetailPage(new ItemDetailViewModel(item));
                 _ = Shell.Current.Navigation.PushAsync(page);
             }
-           // var page = new ItemDetailPage(new ItemDetailViewModel(item));  // create a non nodal page
-           // _ = Shell.Current.Navigation.PushAsync(page);
+
 
         }
     }

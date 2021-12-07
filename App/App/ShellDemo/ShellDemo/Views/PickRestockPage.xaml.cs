@@ -22,12 +22,21 @@ namespace ShellDemo.Views
  
         }
 
+        /// <summary>
+        /// Event handler invoke when the camera got a result from the scan
+        /// </summary>
+        /// <param name="result"></param>
         void ZXingScannerView_OnScanResult(ZXing.Result result)
         {
             PickRestockViewModel ord = (PickRestockViewModel)this.BindingContext;
             ord.ItemBarcodeByUser = result.Text;
         }
 
+        /// <summary>
+        /// Event handler when user pick a choise in the Picker
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
             PickRestockViewModel ord = this.BindingContext as PickRestockViewModel;
@@ -44,6 +53,12 @@ namespace ShellDemo.Views
         {
             ZxingScan = null;
             base.OnDisappearing();
+        }
+
+        protected override void OnAppearing()
+        {
+
+            base.OnAppearing();
         }
     }
 }

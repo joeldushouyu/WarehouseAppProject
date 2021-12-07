@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace ShellDemo.Models
 {
+    //This class used to receive sever's respond message after an Update request
     public class UpdateOrderResponse
     {
         private List<long> _errorOrderID;

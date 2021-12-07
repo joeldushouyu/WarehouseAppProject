@@ -26,6 +26,9 @@ namespace ShellDemo.ViewModels
             PickOrderCommand = new Command(pickOrder);
         }
 
+        /// <summary>
+        /// Direct user to PickOrderPage
+        /// </summary>
         void pickOrder()
         {
             // send to pick order page

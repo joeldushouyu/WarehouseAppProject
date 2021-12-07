@@ -24,27 +24,30 @@ namespace ShellDemo.ViewModels
         public Command UpdateOrderCommand { get; }
        
 
-
-
         public OrderGettedListViewModel()
         {
             Title = "Browse";
             Orders = new ObservableCollection<Order>();
-            LoadOrdersCommand = new Command(() =>  ExecuteLoadItemsCommand());
+            LoadOrdersCommand = new Command(() =>  ExecuteLoadOrdersCommand());
 
             OrderTapped = new Command<Order>(OnOrderSelected);
             PickOrderCommand = new Command(() => StartPicking());
             UpdateOrderCommand = new Command(UpdateCurrentOrders);
        
         }
+        /// <summary>
+        /// Direct user to UpdateOrderPage()
+        /// </summary>
         public void UpdateCurrentOrders()
         {
             var page = new UpdateOrderPage(new UpdaterOrderViewModel());
             _ = Shell.Current.Navigation.PushAsync(page);
         }
+
+
         public  void StartPicking()
         {
-            //TODO: add more logic for Restock action
+        
             //First sort out all orderActions in sequenc
             MobileApp.GetSingletion().User.SortOrderActions();
             List<OrderAction> sortedActions = MobileApp.GetSingletion().User.SortedOrderActions;
@@ -67,7 +70,11 @@ namespace ShellDemo.ViewModels
            
         }
 
-        private void ExecuteLoadItemsCommand()
+
+        /// <summary>
+        /// Load orders picked up by user to the Observablelist
+        /// </summary>
+        private void ExecuteLoadOrdersCommand()
         {
             IsBusy = true;
             //Orders = new ObservableCollection<Order>(MobileApp.GetSingletion().User.Orders);
@@ -107,8 +114,7 @@ namespace ShellDemo.ViewModels
                 var page = new OrderGettedDetailPage(new OrderGettedDetailViewModel(item));
                 _ = Shell.Current.Navigation.PushAsync(page);
             }
-           // var page = new ItemDetailPage(new ItemDetailViewModel(item));  // create a non nodal page
-           // _ = Shell.Current.Navigation.PushAsync(page);
+
 
         }
     }

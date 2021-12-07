@@ -41,21 +41,12 @@ namespace ShellDemo.Models
                                                // When user start picking from location AA0, this app will first direct
                                                // user to pick up items for each supply action later on
 
-        public int Compare(OrderAction x, OrderAction y)
-        {
-            if(x.LocationId < y.LocationId)
-            {
-                return -1;
-            }else if(x.LocationId == y.LocationId)
-            {
-                return 0;
-            }
-            else
-            {
-                return 1;
-            }
-        }
 
+        /// <summary>
+        /// This is a compare function that compare does the pass in OrderAction's LocationID goes before or after the object's LocationID
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>-1 if current OrderAction goes before the parameter, 0 if they are the same, 1 if current OrderAction is greater than the parameter</returns>
         public int CompareTo(OrderAction other)
         {
             if(this.LocationId < other.LocationId)
@@ -71,6 +62,11 @@ namespace ShellDemo.Models
             }
         }
 
+
+        /// <summary>
+        /// The function returns the name of Location correspond to Location's LocationID
+        /// </summary>
+        /// <returns> WorkingSection correspond to the LocationID</returns>
         public string WorkingSection()
         {
             int counter = 0;
