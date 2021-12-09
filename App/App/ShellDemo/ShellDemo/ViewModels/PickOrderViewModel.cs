@@ -3,6 +3,9 @@ using ShellDemo.Models;
 using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
+using ShellDemo.Services;
+using System.Threading.Tasks;
+
 namespace ShellDemo.ViewModels
 {
 
@@ -108,7 +111,7 @@ namespace ShellDemo.ViewModels
         /// <summary>
         /// Send request to server to confirm Pick Order, throw Execption when error occurs
         /// </summary>
-        private async void ConfirmGetOrder()
+        private async Task ConfirmGetOrder()
         {
             try
             {   
@@ -118,7 +121,7 @@ namespace ShellDemo.ViewModels
             }
             catch (Exception e)
             {
-                throw e;
+                throw new ConfirmException(e.Message);
             }
         }
 
@@ -131,6 +134,7 @@ namespace ShellDemo.ViewModels
 
                 if (needConfirmation == false)
                 {
+                    this.ord.BarCode = long.Parse(this._barCodeid);
                     respond = await Services .ServerRequest.PickOrderRequest(this.ord, this._barCodeid, MobileApp.GetSingletion().User.CurrentSessionUUID);
                     needConfirmation = true;
 
@@ -145,7 +149,7 @@ namespace ShellDemo.ViewModels
                 // got and send a confirm request
 
 
-                ConfirmGetOrder();
+                await ConfirmGetOrder();
                 // after server successfully receive the request
                 MobileApp.GetSingletion().User.Orders.Add(ord);
                 _ = await MobileApp.GetSingletion().LocalDatabase.SaveOrderAsync(ord);// save to database

@@ -54,9 +54,9 @@ namespace ShellDemo.Models
         /// <returns>boolean </returns>
         public bool WithinPickingRange(long locationID)
         {
-            List<int>pickingRange =  MobileApp.GetSingletion().User.CalculatePickingRange();
-            int beginngRange = pickingRange[0];
-            int endingRange = pickingRange[1];
+            List<long>pickingRange =  MobileApp.GetSingletion().User.CalculatePickingRange();
+            long beginngRange = pickingRange[0];
+            long endingRange = pickingRange[1];
 
             return beginngRange <= locationID && endingRange >= locationID;
         }

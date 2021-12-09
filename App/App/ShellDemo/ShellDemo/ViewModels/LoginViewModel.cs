@@ -17,6 +17,8 @@ namespace ShellDemo.ViewModels
         private bool needConfirmation = false;
         private UserSession respond;
 
+       
+        public bool IsRunning { get => !CanLogin; }
 
         public string ShowButtonText
         {
@@ -84,7 +86,9 @@ namespace ShellDemo.ViewModels
         {
             get => _canLogin;
             set{
-                _canLogin = value;
+                SetProperty(ref _canLogin, value);
+                OnPropertyChanged(nameof(CanLogin));
+                OnPropertyChanged(nameof(IsRunning));
             }
         }
 
@@ -110,7 +114,7 @@ namespace ShellDemo.ViewModels
         /// This function sends a confirm request to the server, confirm login. Throw Execption for any error occurs
         /// </summary>
         /// <param name="ans"> UserSession with current UUID from server</param>
-        private async void ConfirmLogin(UserSession ans)
+        private async Task ConfirmLogin(UserSession ans)
         {
             try
             {
@@ -120,7 +124,7 @@ namespace ShellDemo.ViewModels
             }
             catch (Exception e)
             {
-                throw e;
+                throw new ConfirmException(e.Message);
 
             }
 
@@ -130,16 +134,22 @@ namespace ShellDemo.ViewModels
         /// <summary>
         /// This sends a logout request to the server to logout current account
         /// </summary>
-        public async void Logout()
+        public async Task Logout()
         {
             try
             {
+                CanLogin = false;
                 await Services.ServerRequest.LogoutRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
-                MobileApp.GetSingletion().User.logoutUser();    
+                MobileApp.GetSingletion().User.logoutUser();
+             
 
             }catch(Exception e)
             {
                 ErrorMessage = e.Message;
+            }
+            finally
+            {
+                CanLogin = true;
             }
 
 
@@ -159,7 +169,8 @@ namespace ShellDemo.ViewModels
                 
                 if(MobileApp.GetSingletion().User.IsLogout() == false)
                 {
-                    Logout();  //everytime when yser try to login, logout user first
+                   await Logout();  //everytime when yser try to login, logout user first
+                    CanLogin = false;
                 }
 
 
@@ -170,7 +181,7 @@ namespace ShellDemo.ViewModels
                     needConfirmation = true;
                 }
 
-                ConfirmLogin(respond);
+                await ConfirmLogin(respond);
 
 
 
@@ -179,17 +190,23 @@ namespace ShellDemo.ViewModels
 
                 ErrorMessage = "";
                 CanLogin = true;
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                
 
             }
-
-           
             catch(Exception e)
             {
 
                 ErrorMessage = e.Message;
             }
-            CanLogin = true;
+
+            finally
+            {   if(MobileApp.GetSingletion().User.IsLogout() == false)
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                }
+              CanLogin = true;  
+            }
+            
 
            
         }

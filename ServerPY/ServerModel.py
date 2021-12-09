@@ -75,7 +75,8 @@ def login():
 
 
         # first to a check and see if the user is already in the activeSessionList
-        value = [sess for sess in activeSessionList if isinstance( sess.action,  LoginOrderCommand) and sess.currentUser.accountName == username and sess.currentUser.password == password ]
+        with lock:
+            value = [sess for sess in activeSessionList if isinstance( sess.action,  LoginOrderCommand) and sess.currentUser.accountName == username and sess.currentUser.password == password ]
         if(len(value) == 1):
             # each user should only have one Session() at a time
             return {"session" : value[0].currentUser.sessionId}
@@ -96,10 +97,10 @@ def login():
 
                     # check to see could the user be in the activeSessionList
 
-                    newSession = uuid.uuid4() # random generate a session
+                    newSession = uuid.uuid4() # random generate a uuid session
                     with lock:
-                        while len( [u for u in loginedUsers if u.sessionId == newSession ]) !=0:
-                            newSession = uuid.uuid4()  # random generate a session
+                        while find_login_user(newSession) != None:
+                            newSession = uuid.uuid4()  # random generate a session, repeat uuid
 
 
                     user.sessionId = newSession
@@ -138,6 +139,8 @@ def login():
 
 @app.route("/confirm", methods=['POST'])
 def confirm_action():
+
+    # note: Even if, for example that login user did not
     userInfo_dict = request.get_json()
     try:
         userUuid = userInfo_dict["session"]  # data of uuid
@@ -148,14 +151,19 @@ def confirm_action():
 
         # check if there is a Session() contains the same
         with lock:
+            removeSession = []
             for sess in activeSessionList:
+
                 if str(sess.sessionUUID) == userUuid:
                     sess.execute()
-                    activeSessionList.remove(sess)
-                    return flask.Response(200) # go out of loop,
+                    #activeSessionList.remove(sess)
+                    removeSession.append(sess)
+            for sess in removeSession:
+                activeSessionList.remove(sess)
+            return flask.Response(200) #     go out of loop,
 
             # if still here, means it did not find a session that match
-            abort(404)
+
 
     except HTTPException as e:
         abort(404, description="Did not find valid session with the uuid provided")
@@ -262,11 +270,7 @@ def order():
                     if o not in returnOrders and o.locked==False:
                         returnOrders.append(o)
 
-            #message = []
-            #length = len(filteredOrderActions)
-            #for i in range(1, length+1):
 
-               # message.append(filteredOrderActions[i-1].to_dict())
             x= flask.jsonify([ ords.to_dict() for ords in returnOrders])
 
             return flask.jsonify([ ords.to_dict() for ords in returnOrders])
@@ -290,8 +294,8 @@ def pick_order():
 
     try:
 
-
-        ordSess = [ses for ses in activeSessionList if isinstance(ses.action, GetOrderCommand) and ses.sessionUUID ==userUuid ]
+        with lock:
+            ordSess = [ses for ses in activeSessionList if isinstance(ses.action, GetOrderCommand) and ses.sessionUUID ==userUuid ]
         if(len(ordSess)) == 1:
             # means the request has already received by user,
             # return information it need
@@ -374,7 +378,8 @@ def update_order():
             # not valid uuid
             abort(403)
         else:
-            updateSess = [ses for ses in activeSessionList if isinstance(ses.action, UpdateOrderCommand) and ses.sessionUUID ==userUUID ] #TODO: modify logic here
+            with lock:
+                updateSess = [ses for ses in activeSessionList if isinstance(ses.action, UpdateOrderCommand) and ses.sessionUUID ==userUUID ] #TODO: modify logic here
             if len(updateSess) == 1:
                 # means it already has a Session()
                 # in other word,the user with the same UUID already requested before

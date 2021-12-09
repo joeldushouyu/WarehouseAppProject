@@ -1,5 +1,5 @@
 from OrderCommandParts.Command import  Command
-from Database import  db,loginedUsers
+from Database import  db,loginedUsers, activeSessionList
 from threading import  Lock
 lock = Lock()
 class ReleaseOrderCommand(Command):
@@ -17,6 +17,11 @@ class ReleaseOrderCommand(Command):
                 order.locked = False
                 db.session.add(order)
             # push updates to the database
+
+            for sess in activeSessionList:
+                if sess.user == self.currentUser:
+                    sess.action.onRelease()  # release it from the database
+
             db.session.commit()
             self.currentUser.pickedUpOrders = []
             # remove the user form logined user list

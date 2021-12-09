@@ -127,10 +127,15 @@ namespace ShellDemo.Models
         {
             _sortedOrderActions.Clear();
             // get current user's picking range
-            List<int> pickingRange = CalculatePickingRange();
-            int beginRange = pickingRange[0];
-            int endRange = pickingRange[1];
+            List<long> pickingRange = CalculatePickingRange();
+            long beginRange = pickingRange[0];
+            long endRange = pickingRange[1];
+
+
+            
             // first get all orderActions in the _orders that are within user's picking range
+
+            
 
             foreach(Order pickedOrder in _orders)
             {
@@ -169,7 +174,14 @@ namespace ShellDemo.Models
             }
             else
             {
-                ; // do nothing
+                //means the user does not start wit AA, so assume each order box already contains items that needs for supply
+                foreach (Order pickedOrder in _orders)
+                {
+                    foreach (OrderAction ordAct in pickedOrder.OrderActions)
+                    {
+                        ordAct.Initialpick = true;
+                    }
+                }
             }
 
             //now sort them base on the locationID in each orderAction
@@ -181,7 +193,7 @@ namespace ShellDemo.Models
         /// This function calculate and convert user's current Picking range in User.WorkingSection
         /// </summary>
         /// <returns> A List<int>, where [0] represent beginning picking range, and [1] represent the ending picking range </int></inheritdoc>/></returns>
-        public List<int> CalculatePickingRange()
+        public List<long> CalculatePickingRange()
         {
             List<string> sectionHeaders =new List<string> {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
                                                              "V", "W", "X", "Y", "Z" };
@@ -191,12 +203,12 @@ namespace ShellDemo.Models
             string beginSection = sects[0];
             string endSection = sects[1];
 
-            int beginningRange = sectionHeaders.IndexOf(beginSection[0].ToString()) * 260 + sectionHeaders.IndexOf(beginSection[1].ToString()) * 10  + 1;
+            long beginningRange = sectionHeaders.IndexOf(beginSection[0].ToString()) * 260 + sectionHeaders.IndexOf(beginSection[1].ToString()) * 10  + 1;
 
-            int endRange = sectionHeaders.IndexOf(endSection[0].ToString()) * 260 + sectionHeaders.IndexOf(endSection[1].ToString()) * 10 + 1 + 9;
+            long endRange = sectionHeaders.IndexOf(endSection[0].ToString()) * 260 + sectionHeaders.IndexOf(endSection[1].ToString()) * 10 + 1 + 9;
 
 
-            List<int> returnList = new List<int>();
+            List<long> returnList = new List<long>();
             returnList.Add(beginningRange);
             returnList.Add(endRange);
 

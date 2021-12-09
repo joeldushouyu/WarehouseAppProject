@@ -29,8 +29,8 @@
         </StackLayout>
         <ScrollView Grid.Row="1">
             <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
-                <Label Text="Xamarin Shell Demo" FontSize="Title"/>
-                <Label Text="This is the Main page" FontSize="16" Padding="0,0,0,0"/>
+                <Label Text="Picking App" FontSize="Title" HorizontalOptions="Center"/>
+                <Label Text="This is the Main page" FontSize="16" Padding="0,0,0,0" HorizontalOptions="Center" />
                 <Button x:Name="nextActionBtn"  Clicked="BrowseItems_Clicked" />
             </StackLayout>
         </ScrollView>

@@ -60,7 +60,7 @@ namespace ShellDemo.ViewModels
 
                 OrderAction nextOrdAct = sortedActions[0];
                 sortedActions.Remove(nextOrdAct);
-                var correspondOrder = MobileApp.GetSingletion().User.Orders.Find((Order ord) => ord.IDAtDatabase == nextOrdAct.IDAtDatabase);
+                var correspondOrder = MobileApp.GetSingletion().User.Orders.Find((Order ord) => ord.IDAtDatabase == nextOrdAct.FromOrderId);
                 var page = new PickRestockPage(
                     new PickRestockViewModel(correspondOrder,  nextOrdAct) );
 

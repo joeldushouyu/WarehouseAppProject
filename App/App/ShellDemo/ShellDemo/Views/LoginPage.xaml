@@ -9,7 +9,9 @@
              x:DataType="viewModel:LoginViewModel"
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
-        <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+        
+        <StackLayout Padding="10,0,10,0" VerticalOptions="Center" >
+            
             <Label Text="{Binding ErrorMessage}" IsVisible="{Binding errorOccurred}" TextColor="Red" />
             <Label Text="Please enter your cridentials below" />
             <Label Text="Username" />
@@ -18,7 +20,8 @@
             <Label Text="Password"/>
             <Entry Text="{Binding Password}"/>
             
-            <Button VerticalOptions="Center" IsEnabled="{Binding CanLogin}" Text="{Binding ShowButtonText}" Command="{Binding LoginCommand} "/>
+            <ActivityIndicator IsRunning="{Binding IsRunning}" />
+            <Button VerticalOptions="Center" IsEnabled="{Binding CanLogin}" Text="{Binding ShowButtonText}" Command="{Binding LoginCommand}" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

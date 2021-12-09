@@ -85,19 +85,19 @@ namespace ShellDemo.ViewModels
         /// <summary>
         /// The function sends an  confirm Update Order request to the server, it throws Exception for any error occurs.
         /// </summary>
-        private void ConfirmUpdateOrder()
+        private async Task ConfirmUpdateOrder()
         {
             try
             {
 
-                var resoind = Services.ServerRequest.ConfirmUpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
+                var resoind = await Services.ServerRequest.ConfirmUpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
                 // means the server has successfully got the message from us.
                 needConfirmation = false;
          
             }
             catch(Exception e)
             {
-                throw e; // let the Onupdate() handle the exception
+                throw new  ConfirmException(e.Message);
                 
             }
 
@@ -125,7 +125,7 @@ namespace ShellDemo.ViewModels
 
                 Console.WriteLine("success");
 
-                ConfirmUpdateOrder();
+                await ConfirmUpdateOrder();
 
                 // clear out the database
 

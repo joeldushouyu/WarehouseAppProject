@@ -88,17 +88,13 @@ namespace ShellDemo.Services
                 int errorcode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
                 if (errorcode == 404)
                 {
-                    return true; // the server has already process the request
+                    throw new Exception("Invalid user id, please try reopen the app");
                 }
                 else
                 {
                     // could be 500 code
                     throw new Exception("unknow error has occurred");
                 }
-            }
-            catch (Exception)
-            {
-                throw new Exception("unexpected error has occurred, please retry");
             }
 
         }
@@ -148,10 +144,6 @@ namespace ShellDemo.Services
                     throw new Exception("Unknow network failure");
                 }
             }
-            catch(Exception e)
-            {
-                throw new Exception("unexpected error occurs");
-            }
 
         }
 
@@ -176,7 +168,7 @@ namespace ShellDemo.Services
             }
             catch (FlurlHttpTimeoutException)
             {
-                throw new Exception("unknow network exception, please retry");
+                throw new Exception("unstable network exception, please retry");
             }catch(FlurlHttpException e)
             {
                 if (((Flurl.Http.FlurlHttpException)e).StatusCode == null)
@@ -187,17 +179,13 @@ namespace ShellDemo.Services
                 int errorcode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
                 if (errorcode == 404)
                 {
-                    return true; // the server has already process the request
+                    throw new Exception("Invalid user id, please try reopen the app");
                 }
                 else
                 {
                     // could be 500 code
                     throw new Exception("unknown error has occurred");
                 }
-            }
-            catch(Exception)
-            {
-                throw new Exception("unexpected error has occurred, please retry");
             }
 
         }
@@ -253,10 +241,7 @@ namespace ShellDemo.Services
                     throw new Exception("An undesire error happens, please retry");
                 }
             }
-            catch (Exception)
-            {
-                throw new Exception("An undesire error happens, please retry");
-            }
+
 
         }
 
@@ -294,18 +279,13 @@ namespace ShellDemo.Services
                 int errorcode = (int)((Flurl.Http.FlurlHttpException)e).StatusCode;
                 if (errorcode == 404)
                 {
-                    // the server has already process the request
-                    return true;  // does not throw execption here
+                    throw new Exception("Invalid user id, please try reopen the app");
                 }
                 else
                 {
                     // could be 500 code
                     throw new Exception("unknown error occurs to server");
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("unknow error occurred");
             }
 
          
@@ -321,7 +301,7 @@ namespace ShellDemo.Services
             try
             {
                 string url = BaseUrl + "/logout";
-                await url.WithTimeout(10).PostJsonAsync(new UserSession
+                await url.WithTimeout(15).PostJsonAsync(new UserSession
                 {
                     Session = UserUUID
 
@@ -373,10 +353,6 @@ namespace ShellDemo.Services
                     throw new Exception("Unknow error occurs, please retry by went back to the previous page");
                 }
             }
-            catch (Exception)
-            {
-                throw new Exception("Unknow error, please retry");
-            }
 
         }
 
@@ -393,7 +369,7 @@ namespace ShellDemo.Services
 
 
                 string url = BaseUrl + "/orderList"; 
-                var act =  await url.WithTimeout(10).PostJsonAsync(user);
+                var act =  await url.WithTimeout(20).PostJsonAsync(user);
                 return await act.GetJsonAsync<List<Order>>();
             }
             catch(FlurlHttpTimeoutException e)
@@ -425,10 +401,7 @@ namespace ShellDemo.Services
                     throw new Exception("Unknow error has occurred, please retry");
                 }
             }
-            catch (Exception)
-            {
-                throw new Exception("Unknow error has occurred, please retry");
-            }
+    
         }
         /// <summary>
         /// Send a request to server to load all Items in the warehouse
@@ -469,11 +442,7 @@ namespace ShellDemo.Services
                 }
             }
             
-            catch(Exception )
-            {
-
-                throw new Exception("unknow error occurs, please retry");
-            }
+   
             
             
         }

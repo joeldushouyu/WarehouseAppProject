@@ -44,11 +44,15 @@ namespace ShellDemo
                    {
                        _ = await Services.ServerRequest.UpdateRequest(uuid, orders); //has to wait for this result
                         _ = await Services.ServerRequest.ConfirmUpdateRequest(uuid);
+                        await Services.ServerRequest.LogoutRequest(uuid);
                    });
                 }
                 else
                 {
-                    ;
+                    await Task.Run(async () =>
+                    {
+                        _ = Services.ServerRequest.LogoutRequest(uuid);  //  try to logout the user, just in case. 
+                    });
                 }
 
             }
@@ -80,13 +84,13 @@ namespace ShellDemo
                 try
                 {
 
-
-
+                    
+                    
                     await Task.Run(async () =>
                     {
-                    _ = Services.ServerRequest.UpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID, MobileApp.GetSingletion().User.Orders).Result;  //has to wait for this request
-                    _ = Services.ServerRequest.ConfirmUpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID).Result;
-                        _ = Services.ServerRequest.LogoutRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
+                    _ = await Services.ServerRequest.UpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID, MobileApp.GetSingletion().User.Orders);  //has to wait for this request
+                    _ = await Services.ServerRequest.ConfirmUpdateRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
+                       await Services.ServerRequest.LogoutRequest(MobileApp.GetSingletion().User.CurrentSessionUUID);
                     });
 
 
