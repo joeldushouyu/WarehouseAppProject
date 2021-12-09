@@ -217,6 +217,12 @@ namespace ShellDemo.ViewModels
             ScanningCommand = new Command(OnScanning);
             this.PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
+
+            OnPropertyChanged(WarningTextColor);
+            OnPropertyChanged(Action);
+
+            OnPropertyChanged(ItemBarcode);
+
         }
 
 
@@ -268,7 +274,9 @@ namespace ShellDemo.ViewModels
                 // still have orderActions
                 OrderAction nextOrdAct = sortedActions[0];
                 sortedActions.Remove(nextOrdAct);
-                var correspondOrder = MobileApp.GetSingletion().User.Orders.Find((Order ord) => ord.IDAtDatabase == nextOrdAct.IDAtDatabase);
+                var correspondOrder = MobileApp.GetSingletion().User.Orders.Find((Order ord) => ord.IDAtDatabase == nextOrdAct.FromOrderId);
+  
+
                 var page = new PickRestockPage(new PickRestockViewModel(correspondOrder, nextOrdAct));
                 
                 _ = Shell.Current.Navigation.PushAsync(page);
