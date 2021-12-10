@@ -1,20 +1,22 @@
 # README
 
 
-| Expect to be complete | Status |
+| Max 80 | Status |
 | ------------- | ------------- |
-# Max 80
 | Basic Implementation of pick functionality | complete|
 
-#Max 90
-|Handle concurrency issue|complete |
-|Handle issues occur due to network failure and latency| complete|
+| Max 90 | Status |
+| ------------- | ------------- |
+| Handle concurrency issue | complete |
+| Handle issues occur due to network failure and latency| complete |
 
-#Max 100
+| Max 100 | Status |
+| ------------- | ------------- |
 |User able to swich back and forth between different picking sections|complete|
 |Implement the Supply functionality| complete|
 
-#Extra
+| Extra | Status |
+| ------------- | ------------- |
 |Implement Items page| complete|
 
 TimeLog :https://bju-my.sharepoint.com/:x:/g/personal/sdu568_students_bju_edu/Ed5jpJU0cdxJogcPPrgA8B0BS_yRQYaCZI5biI-5Bb9TKA?email=Sschaub%40bju.edu&e=Uxub2i
