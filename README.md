@@ -1,20 +1,21 @@
 # README
 
-work schedule to be done at Project Deliverable 1
 
 | Expect to be complete | Status |
 | ------------- | ------------- |
-| Login Page along with handling network issue | complete  |
-| OrderList page along with API calls   | complete  |
-| Get Order page along with API calls | complete  |
-| Picking page along along with API calls  | complete  |
-| update Order page along with API calls  | complete  |
-| logout page alog with API calls  | complete  |
-| API error and concurrency handling| complete|
-| Supply ability                    | complete|
-| Implement Items list page for EC  | complete|
-| Comment in code and update in deisgn documents | complete|
+# Max 80
+| Basic Implementation of pick functionality | complete|
 
+#Max 90
+|Handle concurrency issue|complete |
+|Handle issues occur due to network failure and latency| complete|
+
+#Max 100
+|User able to swich back and forth between different picking sections|complete|
+|Implement the Supply functionality| complete|
+
+#Extra
+|Implement Items page| complete|
 
 TimeLog :https://bju-my.sharepoint.com/:x:/g/personal/sdu568_students_bju_edu/Ed5jpJU0cdxJogcPPrgA8B0BS_yRQYaCZI5biI-5Bb9TKA?email=Sschaub%40bju.edu&e=Uxub2i
 
