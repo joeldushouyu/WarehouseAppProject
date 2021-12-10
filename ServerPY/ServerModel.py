@@ -252,6 +252,7 @@ def order():
             # no user login with this id
             abort(403, description="incorrect uuid")
         else:
+
             section = workingSection.split("-")
             range1 = determine_range(section[0])
             range2 = determine_range(section[1])
