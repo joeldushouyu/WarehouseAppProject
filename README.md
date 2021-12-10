@@ -16,8 +16,6 @@ work schedule to be done at Project Deliverable 1
 | Comment in code and update in deisgn documents | complete|
 
 
-Currently, I am expecting that I need about 5 more hours or so do update and finialize my project.
-
 TimeLog :https://bju-my.sharepoint.com/:x:/g/personal/sdu568_students_bju_edu/Ed5jpJU0cdxJogcPPrgA8B0BS_yRQYaCZI5biI-5Bb9TKA?email=Sschaub%40bju.edu&e=Uxub2i
 
 
