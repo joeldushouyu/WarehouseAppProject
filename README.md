@@ -1,7 +1,8 @@
 # README
 
 # presentation video
-https://bju-my.sharepoint.com/personal/sdu568_students_bju_edu/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsdu568%5Fstudents%5Fbju%5Fedu%2FDocuments%2FpresentationVideoCps320%2Emkv&parent=%2Fpersonal%2Fsdu568%5Fstudents%5Fbju%5Fedu%2FDocuments
+
+https://bju-my.sharepoint.com/:v:/g/personal/sdu568_students_bju_edu/EThK4-5Y0b1ButERpAK5BxoBSxKP-JARwo4d7ULFfvwkeA?e=FZE7cm
 
 | Max 80 | Status |
 | ------------- | ------------- |
