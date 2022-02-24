@@ -2,7 +2,7 @@
 
 # presentation video
 
-https://bju-my.sharepoint.com/:v:/g/personal/sdu568_students_bju_edu/EThK4-5Y0b1ButERpAK5BxoBSxKP-JARwo4d7ULFfvwkeA?e=FZE7cm
+https://bju-my.sharepoint.com/:v:/r/personal/sdu568_students_bju_edu/Documents/presentationVideoCps320.mkv?csf=1&web=1&e=aE6FSo
 
 | Max 80 | Status |
 | ------------- | ------------- |
