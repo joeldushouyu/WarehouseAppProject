@@ -1,9 +1,7 @@
 # README
 
 # presentation video
-
-https://bju-my.sharepoint.com/:v:/r/personal/sdu568_students_bju_edu/Documents/presentationVideoCps320.mkv?csf=1&web=1&e=aE6FSo
-
+https://drive.google.com/file/d/1jr7sQ4cAlveBX4LaWxtKERG160r3Blse/view?usp=sharing
 | Max 80 | Status |
 | ------------- | ------------- |
 | Basic Implementation of pick functionality | complete|
